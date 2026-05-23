@@ -55,6 +55,7 @@ function markdownRecipePlugin() {
         tags: fm.tags || [],
         targetDoughTemp: fm.target_dough_temp || 25,
         flourBaseG: fm.flour_base_g || 500,
+        defaultQuantity: fm.default_quantity ?? 1,
         kneadDurationMin: fm.knead_duration_min || 10,
         ingredients: fm.ingredients || [],
         intro,

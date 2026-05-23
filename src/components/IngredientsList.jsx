@@ -6,7 +6,7 @@ export default function IngredientsList({ ingredients, loaves }) {
       <h2 className="text-xl font-semibold text-stone-800 dark:text-stone-200 mb-3">
         Ingredients
         <span className="text-sm font-normal text-stone-400 dark:text-stone-500 ml-2">
-          ({loaves} {loaves === 1 ? 'loaf' : 'loaves'})
+          (×{loaves})
         </span>
       </h2>
       <div className="border border-stone-200 dark:border-stone-700 rounded-xl overflow-hidden">

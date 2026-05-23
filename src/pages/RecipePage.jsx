@@ -12,8 +12,7 @@ import SchedulePlanner from '../components/SchedulePlanner'
 import IngredientsList from '../components/IngredientsList'
 import StepList from '../components/StepList'
 
-const DEFAULT_PROGRESS = {
-  loaves: 1,
+const PROGRESS_DEFAULTS = {
   scheduleAnchor: null,
   completedSteps: [],
   stepCompletionTimes: {},
@@ -24,7 +23,8 @@ export default function RecipePage() {
   const { slug } = useParams()
   const recipe = getRecipeBySlug(slug)
 
-  const [progress, setProgress] = useLocalStorage(`baking-progress-${slug}`, DEFAULT_PROGRESS)
+  const defaultProgress = { loaves: recipe?.defaultQuantity ?? 1, ...PROGRESS_DEFAULTS }
+  const [progress, setProgress] = useLocalStorage(`baking-progress-${slug}`, defaultProgress)
   const [prefs, setPrefs] = useLocalStorage('baking-prefs', {
     roomTemp: 22,
     flourTemp: 20,
@@ -69,7 +69,7 @@ export default function RecipePage() {
     })
   }
 
-  const resetProgress = () => setProgress(DEFAULT_PROGRESS)
+  const resetProgress = () => setProgress(defaultProgress)
 
   const handleTimerStart = useCallback((index, projectedEndMs) => {
     setProgress(prev => {
