@@ -5,6 +5,7 @@ tags: [advanced, spelt, boule]
 target_dough_temp: 26
 flour_base_g: 620
 knead_duration_min: 10
+default_quantity: 1
 
 ingredients:
   - group: "Levain"

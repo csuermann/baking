@@ -5,6 +5,7 @@ tags: [beginner, boule, classic]
 target_dough_temp: 25
 flour_base_g: 500
 knead_duration_min: 5
+default_quantity: 1
 
 ingredients:
   - name: Bread flour
