@@ -1,6 +1,6 @@
 import StepItem from './StepItem'
 
-export default function StepList({ steps, schedule, completedSteps, onToggleStep, slug }) {
+export default function StepList({ steps, schedule, completedSteps, onToggleStep, slug, onTimerStart, onTimerReset }) {
   return (
     <section>
       <h2 className="text-xl font-semibold text-stone-800 dark:text-stone-200 mb-6">Steps</h2>
@@ -13,6 +13,8 @@ export default function StepList({ steps, schedule, completedSteps, onToggleStep
           isCompleted={completedSteps.includes(index)}
           onToggle={onToggleStep}
           slug={slug}
+          onTimerStart={onTimerStart}
+          onTimerReset={onTimerReset}
         />
       ))}
     </section>

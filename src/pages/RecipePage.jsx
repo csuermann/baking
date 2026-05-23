@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -71,6 +71,22 @@ export default function RecipePage() {
 
   const resetProgress = () => setProgress(DEFAULT_PROGRESS)
 
+  const handleTimerStart = useCallback((index, projectedEndMs) => {
+    setProgress(prev => {
+      if (prev.completedSteps.includes(index)) return prev
+      return { ...prev, stepCompletionTimes: { ...prev.stepCompletionTimes, [index]: projectedEndMs } }
+    })
+  }, [])
+
+  const handleTimerReset = useCallback(index => {
+    setProgress(prev => {
+      if (prev.completedSteps.includes(index)) return prev
+      const times = { ...prev.stepCompletionTimes }
+      delete times[index]
+      return { ...prev, stepCompletionTimes: times }
+    })
+  }, [])
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <Link to="/" className="text-sm text-amber-600 hover:underline mb-6 inline-block">
@@ -123,6 +139,8 @@ export default function RecipePage() {
         completedSteps={progress.completedSteps}
         onToggleStep={toggleStep}
         slug={slug}
+        onTimerStart={handleTimerStart}
+        onTimerReset={handleTimerReset}
       />
 
       {progress.completedSteps.length > 0 && (

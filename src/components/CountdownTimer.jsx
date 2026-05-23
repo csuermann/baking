@@ -9,8 +9,18 @@ function formatTime(ms) {
   return `${m}:${String(s).padStart(2, '0')}`
 }
 
-export default function CountdownTimer({ timerKey, durationMs }) {
+export default function CountdownTimer({ timerKey, durationMs, onTimerStart, onTimerReset }) {
   const { remainingMs, isRunning, isDone, started, start, pause, reset } = useTimer(timerKey, durationMs)
+
+  const handleStart = () => {
+    onTimerStart?.(Date.now() + remainingMs)
+    start()
+  }
+
+  const handleReset = () => {
+    onTimerReset?.()
+    reset()
+  }
 
   return (
     <div className="flex items-center gap-2 mt-3">
@@ -24,7 +34,7 @@ export default function CountdownTimer({ timerKey, durationMs }) {
 
       {!isRunning && !isDone && (
         <button
-          onClick={start}
+          onClick={handleStart}
           className="text-xs px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors"
         >
           {started ? 'Resume' : 'Start timer'}
@@ -40,7 +50,7 @@ export default function CountdownTimer({ timerKey, durationMs }) {
       )}
       {started && (
         <button
-          onClick={reset}
+          onClick={handleReset}
           className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
         >
           Reset

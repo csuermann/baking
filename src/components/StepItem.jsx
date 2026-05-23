@@ -18,7 +18,7 @@ function fmtDuration(step) {
   return step.isVariable ? `${fmt(step.durationMin)}–${fmt(step.durationMax)}` : fmt(step.durationMin)
 }
 
-export default function StepItem({ step, index, stepSchedule, isCompleted, onToggle, slug }) {
+export default function StepItem({ step, index, stepSchedule, isCompleted, onToggle, slug, onTimerStart, onTimerReset }) {
   const timerKey = `timer-${slug}-${index}`
   const defaultDurationMs = ((step.durationMin + step.durationMax) / 2) * 60 * 1000
   const hasTimer = step.durationMin > 0
@@ -85,7 +85,12 @@ export default function StepItem({ step, index, stepSchedule, isCompleted, onTog
           )}
 
           {!isCompleted && hasTimer && (
-            <CountdownTimer timerKey={timerKey} durationMs={defaultDurationMs} />
+            <CountdownTimer
+              timerKey={timerKey}
+              durationMs={defaultDurationMs}
+              onTimerStart={projectedEnd => onTimerStart?.(index, projectedEnd)}
+              onTimerReset={() => onTimerReset?.(index)}
+            />
           )}
         </div>
       </div>
