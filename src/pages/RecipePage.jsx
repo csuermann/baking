@@ -17,6 +17,7 @@ const DEFAULT_PROGRESS = {
   scheduleAnchor: null,
   completedSteps: [],
   stepCompletionTimes: {},
+  kneadDurationOverride: null,
 }
 
 export default function RecipePage() {
@@ -28,7 +29,6 @@ export default function RecipePage() {
     roomTemp: 22,
     flourTemp: 20,
     risePerMin: 0.5,
-    kneadDurationMin: recipe?.kneadDurationMin ?? 10,
   })
 
   const scaledIngredients = useMemo(
@@ -109,7 +109,9 @@ export default function RecipePage() {
 
       <WaterTempCalc
         targetDoughTemp={recipe.targetDoughTemp}
-        prefs={{ ...prefs, kneadDurationMin: prefs.kneadDurationMin ?? recipe.kneadDurationMin }}
+        kneadDurationMin={progress.kneadDurationOverride ?? recipe.kneadDurationMin}
+        onKneadDurationChange={v => setProgress(p => ({ ...p, kneadDurationOverride: v }))}
+        prefs={prefs}
         onPrefsChange={updates => setPrefs(p => ({ ...p, ...updates }))}
       />
 

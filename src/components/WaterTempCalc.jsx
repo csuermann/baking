@@ -4,7 +4,7 @@ import { computeWaterTemp } from '../utils/ddt'
 const inputCls = 'w-full text-sm border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-1.5 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-400'
 const labelCls = 'block text-xs text-stone-500 dark:text-stone-400 mb-1'
 
-export default function WaterTempCalc({ targetDoughTemp, prefs, onPrefsChange }) {
+export default function WaterTempCalc({ targetDoughTemp, kneadDurationMin, onKneadDurationChange, prefs, onPrefsChange }) {
   const [open, setOpen] = useState(false)
 
   const waterTemp = computeWaterTemp({
@@ -12,7 +12,7 @@ export default function WaterTempCalc({ targetDoughTemp, prefs, onPrefsChange })
     roomTemp: prefs.roomTemp,
     flourTemp: prefs.flourTemp,
     risePerMin: prefs.risePerMin,
-    kneadDurationMin: prefs.kneadDurationMin,
+    kneadDurationMin,
   })
   const waterTempRounded = Math.round(waterTemp * 10) / 10
   const hasWarning = waterTemp < 0 || waterTemp > 40
@@ -65,8 +65,8 @@ export default function WaterTempCalc({ targetDoughTemp, prefs, onPrefsChange })
               <input
                 type="number"
                 className={inputCls}
-                value={prefs.kneadDurationMin}
-                onChange={e => onPrefsChange({ kneadDurationMin: parseFloat(e.target.value) || 0 })}
+                value={kneadDurationMin}
+                onChange={e => onKneadDurationChange(parseFloat(e.target.value) || 0)}
               />
             </label>
           </div>
