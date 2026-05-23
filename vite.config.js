@@ -69,5 +69,5 @@ function markdownRecipePlugin() {
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), markdownRecipePlugin()],
-  base: '/baking/',
+  base: '/',
 })
