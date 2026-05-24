@@ -16,6 +16,7 @@ export default function StepList({ steps, schedule, completedSteps, onToggleStep
           onDurationChange={mins => onStepDurationChange(index, mins)}
           activatedAt={stepActivatedAt?.[index]}
           completedAt={completedSteps.includes(index) ? stepCompletionTimes?.[index] : undefined}
+          recipeStarted={stepActivatedAt?.[0] != null}
         />
       ))}
     </section>

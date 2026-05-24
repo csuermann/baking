@@ -21,7 +21,7 @@ function fmtDuration(step) {
   return step.isVariable ? `${fmtMins(step.durationMin)}–${fmtMins(step.durationMax)}` : fmtMins(step.durationMin)
 }
 
-export default function StepItem({ step, index, stepSchedule, isCompleted, onToggle, durationOverride, onDurationChange, activatedAt, completedAt }) {
+export default function StepItem({ step, index, stepSchedule, isCompleted, onToggle, durationOverride, onDurationChange, activatedAt, completedAt, recipeStarted }) {
   const [now, setNow] = useState(Date.now())
   useEffect(() => {
     if (!activatedAt || isCompleted) return
@@ -50,21 +50,23 @@ export default function StepItem({ step, index, stepSchedule, isCompleted, onTog
       }`}
     >
       <div className="flex items-start gap-3">
-        <button
-          onClick={() => onToggle(index)}
-          className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-            isCompleted
-              ? 'border-green-400 bg-green-400'
-              : 'border-stone-300 dark:border-stone-600 hover:border-amber-400'
-          }`}
-          aria-label={isCompleted ? 'Mark incomplete' : 'Mark complete'}
-        >
-          {isCompleted && (
-            <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
-        </button>
+        {recipeStarted && (
+          <button
+            onClick={() => onToggle(index)}
+            className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+              isCompleted
+                ? 'border-green-400 bg-green-400'
+                : 'border-stone-300 dark:border-stone-600 hover:border-amber-400'
+            }`}
+            aria-label={isCompleted ? 'Mark incomplete' : 'Mark complete'}
+          >
+            {isCompleted && (
+              <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </button>
+        )}
 
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
