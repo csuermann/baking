@@ -1,6 +1,29 @@
 import { HashRouter, Routes, Route, Link, useMatch } from 'react-router-dom'
+import { SignedIn, SignedOut, SignIn, UserButton } from '@clerk/clerk-react'
 import HomePage from './pages/HomePage'
 import RecipePage from './pages/RecipePage'
+
+const clerkDarkAppearance = {
+  variables: {
+    colorBackground: '#0c0a09',       // stone-950
+    colorInputBackground: '#1c1917',  // stone-900
+    colorText: '#e7e5e4',             // stone-200
+    colorTextSecondary: '#a8a29e',    // stone-400
+    colorPrimary: '#f59e0b',          // amber-500
+    colorDanger: '#ef4444',
+    borderRadius: '0.75rem',
+  },
+  elements: {
+    card: 'shadow-none border border-stone-800',
+    headerTitle: 'text-stone-100',
+    headerSubtitle: 'text-stone-400',
+    socialButtonsBlockButton: 'border-stone-700 hover:bg-stone-800 text-stone-200',
+    dividerLine: 'bg-stone-800',
+    dividerText: 'text-stone-500',
+    formFieldInput: 'border-stone-700 text-stone-100',
+    footerActionLink: 'text-amber-400 hover:text-amber-300',
+  },
+}
 
 function AppHeader() {
   const onRecipePage = useMatch('/recipe/:slug')
@@ -21,12 +44,15 @@ function AppHeader() {
         <Link to="/" className="absolute left-1/2 -translate-x-1/2 text-stone-200 font-semibold text-lg tracking-tight">
           Baking Assistant
         </Link>
+        <div className="ml-auto">
+          <UserButton appearance={{ elements: { avatarBox: 'w-8 h-8' } }} />
+        </div>
       </div>
     </header>
   )
 }
 
-export default function App() {
+function AppShell() {
   return (
     <HashRouter>
       <div className="min-h-screen bg-stone-950">
@@ -39,5 +65,20 @@ export default function App() {
         </main>
       </div>
     </HashRouter>
+  )
+}
+
+export default function App() {
+  return (
+    <>
+      <SignedIn>
+        <AppShell />
+      </SignedIn>
+      <SignedOut>
+        <div className="min-h-screen bg-stone-950 flex items-center justify-center p-4">
+          <SignIn appearance={clerkDarkAppearance} />
+        </div>
+      </SignedOut>
+    </>
   )
 }
