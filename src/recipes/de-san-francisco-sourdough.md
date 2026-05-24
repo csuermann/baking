@@ -2,36 +2,36 @@
 title: San Francisco Sourdough Bread
 description: Dreistufiges Dinkelsauerteigbrot mit Kochstück und Autolyseteig. Kalte Stückgare über Nacht für intensiveres Aroma und einfacheres Einschneiden. Gebacken im gusseisernen Topf.
 target_dough_temp: 26
-flour_base_g: 620
-knead_duration_min: 10
+flour_base_g: 500
+knead_duration_min: 15
 default_quantity: 1
 
 ingredients:
   - group: "Sauerteig"
   - name: Wasser (40°C)
-    percent: 8.9
+    percent: 8.8
     is_water: true
   - name: Dinkelmehl 630
-    percent: 7.3
+    percent: 7.2
   - name: Weizen-ASG (fest, TA 150, 28°C)
     percent: 3.2
   - group: "Kochstück"
   - name: Wasser
-    percent: 16.1
+    percent: 16.0
     is_water: true
   - name: Dinkelmehl 630
     percent: 3.2
   - group: "Autolyseteig"
   - name: Wasser (30°C)
-    percent: 45.2
+    percent: 45.0
     is_water: true
   - name: Dinkelmehl 630
-    percent: 89.5
+    percent: 89.6
   - group: "Hauptteig"
   - name: Salz
-    percent: 2.3
+    percent: 2.2
   - name: Ascorbinsäure (Vitamin C)
-    percent: 0.16
+    percent: 0.2
   - name: Bassinage (Restwasser, 30°C)
     percent: 8.0
     is_water: true
@@ -63,7 +63,7 @@ Den Sauerteig **2–3 Stunden bei 28°C** reifen lassen. Er ist reif, wenn das V
 
 duration: 35
 
-Wasser (30°C), Dinkelmehl 630 und das gesamte abgekühlte Kochstück (~120g) vermischen, bis sich ein fester, homogener Teig gebildet hat — er wirkt bewusst etwas trocken, die Bassinage kommt später. Zieltemperatur: ca. **24°C**. Abgedeckt **30 Minuten** bei 24°C quellen lassen.
+Wasser (30°C), Dinkelmehl 630 und das gesamte abgekühlte Kochstück (~95g) vermischen, bis sich ein fester, homogener Teig gebildet hat — er wirkt bewusst etwas trocken, die Bassinage kommt später. Zieltemperatur: ca. **24°C**. Abgedeckt **30 Minuten** bei 24°C quellen lassen.
 
 ### Hauptteig kneten
 
