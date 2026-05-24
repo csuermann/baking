@@ -111,7 +111,7 @@ export default function StepItem({ step, index, stepSchedule, isCompleted, onTog
                 <span>
                   Est. end:{' '}
                   <span className="text-stone-500 dark:text-stone-400">
-                    {step.isVariable ? `~${endLabel}` : endLabel}
+                    {endLabel}
                   </span>
                 </span>
               )}
