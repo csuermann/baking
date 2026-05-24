@@ -9,7 +9,7 @@ export function computeSchedule(steps, anchor, stepCompletionTimes = {}, stepDur
   // without an explicit schedule anchor set by the user.
   const implicitStart = stepActivatedAt[0] != null ? new Date(stepActivatedAt[0]) : null
 
-  if ((!anchor && !implicitStart) || !steps.length) return steps.map(() => null)
+  if (!steps.length) return []
 
   const totalMinutes = steps.reduce((sum, s, i) =>
     sum + (stepDurationOverrides[i] != null ? stepDurationOverrides[i] : getDefaultDuration(s)), 0)
@@ -21,9 +21,12 @@ export function computeSchedule(steps, anchor, stepCompletionTimes = {}, stepDur
     } else {
       scheduleStart = new Date(anchor.datetime)
     }
-  } else {
-    // No explicit anchor — derive start from actual recipe kick-off time
+  } else if (implicitStart) {
+    // In-progress recipe: anchor to its real wall-clock start
     scheduleStart = implicitStart
+  } else {
+    // Nothing set yet: project forward from now so times are always visible
+    scheduleStart = new Date()
   }
 
   const schedule = []
