@@ -1,6 +1,6 @@
 ---
 title: San Francisco Sourdough Bread
-description: Dreistufiges Dinkelsauerteigbrot mit Kochstück und Autolyseteig für eine saftige, langfrische Krume und rösche Kruste. Gebacken im gusseisernen Topf.
+description: Dreistufiges Dinkelsauerteigbrot mit Kochstück und Autolyseteig. Kalte Stückgare über Nacht für intensiveres Aroma und einfacheres Einschneiden. Gebacken im gusseisernen Topf.
 target_dough_temp: 26
 flour_base_g: 620
 knead_duration_min: 10
@@ -34,7 +34,7 @@ ingredients:
     percent: 0.16
 ---
 
-Dreistufiges Dinkelsauerteigbrot mit festem Weizen-Anstellgut. Das **Kochstück** verkleistert einen Teil des Mehls und sorgt für eine besonders saftige, langfrisch bleibende Krume. Der **Autolyseteig** entwickelt das Klebergerüst schonend, bevor der Hauptteig zusammengeführt wird. Gebacken im geschlossenen gusseisernen Topf entsteht eine rösche Kruste mit gutem Ausbund.
+Dreistufiges Dinkelsauerteigbrot mit festem Weizen-Anstellgut. Das **Kochstück** verkleistert einen Teil des Mehls und sorgt für eine besonders saftige, langfrisch bleibende Krume. Der **Autolyseteig** entwickelt das Klebergerüst schonend, bevor der Hauptteig zusammengeführt wird. Die **kalte Stückgare** über Nacht verlangsamt die Gärung, vertieft das Aroma und macht den Teigling fester — so lässt er sich am nächsten Tag direkt aus dem Kühlschrank einschneiden und backen. Gebacken im geschlossenen gusseisernen Topf entsteht eine rösche Kruste mit gutem Ausbund.
 
 ## Steps
 
@@ -85,19 +85,19 @@ duration: 5
 
 Den Teigling schonend auf die leicht bemehlte Arbeitsfläche geben, locker rund einschlagen und straff rund schieben.
 
-### Stückgare
+### Stückgare (kalt)
 
-duration: 60-90
+duration: 480-960
 
-Den Teigling mit dem Schluss nach oben in einen mit Roggen- oder Reismehl gestaubten Gärkorb legen. Abgedeckt **1–1,5 Stunden bei 24°C** reifen lassen.
-
-Gleichzeitig den Ofen mit dem gusseisernen Topf auf **250°C Ober-/Unterhitze** vorheizen.
+Den Teigling mit dem Schluss nach oben in einen mit Roggen- oder Reismehl gestaubten Gärkorb legen. Mit Frischhaltefolie oder einer Duschhaube abdecken und **über Nacht im Kühlschrank bei 4–6°C** reifen lassen (8–16 Stunden). Der Teigling soll sich sichtbar vergrößert haben und auf leichten Druck langsam zurückfedern.
 
 ### Einschneiden und Backen mit Deckel
 
 duration: 22
 
-Den Teigling auf ein Stück Backpapier stürzen (Schluss ist nun unten). Oberfläche mit einer Rasierklinge oder einem scharfen Messer im **45°-Winkel** einschneiden.
+Den Ofen mit dem gusseisernen Topf auf **250°C Ober-/Unterhitze** vorheizen (mindestens 45 Minuten). Den Teigling erst kurz vor dem Backen aus dem Kühlschrank nehmen.
+
+Den kalten Teigling auf ein Stück Backpapier stürzen (Schluss ist nun unten). Oberfläche mit einer Rasierklinge oder einem scharfen Messer im **45°-Winkel** einschneiden — der kalte, feste Teigling lässt sich besonders sauber einschneiden.
 
 Teigling mitsamt Backpapier in den heißen Topf heben und Deckel schließen. Nach **5 Minuten** die Temperatur auf **220°C** zurückschalten. Insgesamt **20 Minuten mit Deckel** backen.
 
