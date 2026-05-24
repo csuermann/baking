@@ -16,7 +16,7 @@ function StatChip({ label, value }) {
   )
 }
 
-function BakeEntry({ entry, steps }) {
+function BakeEntry({ entry, steps, onDelete }) {
   const completedCount = entry.completedSteps?.length ?? 0
   const totalCount = steps?.length ?? 0
 
@@ -42,9 +42,18 @@ function BakeEntry({ entry, steps }) {
         <span className="text-sm text-stone-600 dark:text-stone-400">
           {format(new Date(entry.timestamp), 'dd MMM yyyy, HH:mm')}
         </span>
-        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize ${RATING_STYLES[entry.rating] ?? ''}`}>
-          {entry.rating}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize ${RATING_STYLES[entry.rating] ?? ''}`}>
+            {entry.rating}
+          </span>
+          <button
+            onClick={() => onDelete(entry.id)}
+            className="text-stone-300 hover:text-red-400 dark:text-stone-600 dark:hover:text-red-500 text-base leading-none"
+            aria-label="Delete entry"
+          >
+            ×
+          </button>
+        </div>
       </div>
       <div className="flex flex-wrap gap-x-4 gap-y-1">
         <StatChip label="qty" value={`×${entry.loaves}`} />
@@ -65,7 +74,7 @@ function BakeEntry({ entry, steps }) {
   )
 }
 
-export default function BakingHistory({ history, recipe }) {
+export default function BakingHistory({ history, recipe, onDelete }) {
   const [open, setOpen] = useState(false)
 
   if (!history.length) return null
@@ -84,7 +93,7 @@ export default function BakingHistory({ history, recipe }) {
       {open && (
         <div className="px-4 bg-white dark:bg-stone-900">
           {history.map(entry => (
-            <BakeEntry key={entry.id} entry={entry} steps={recipe?.steps} />
+            <BakeEntry key={entry.id} entry={entry} steps={recipe?.steps} onDelete={onDelete} />
           ))}
         </div>
       )}

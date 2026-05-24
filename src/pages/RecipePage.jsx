@@ -82,6 +82,10 @@ export default function RecipePage() {
     })
   }, [])
 
+  const handleDeleteHistory = useCallback(id => {
+    setHistory(prev => prev.filter(entry => entry.id !== id))
+  }, [setHistory])
+
   const handleRate = useCallback(rating => {
     const record = {
       id: Date.now(),
@@ -166,7 +170,7 @@ export default function RecipePage() {
         onTimerReset={handleTimerReset}
       />
 
-      <BakingHistory history={history} recipe={recipe} />
+      <BakingHistory history={history} recipe={recipe} onDelete={handleDeleteHistory} />
 
       {progress.completedSteps.length > 0 && (
         <div className="mt-8 pt-8 border-t border-stone-200 dark:border-stone-800 text-center">
