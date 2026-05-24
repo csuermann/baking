@@ -17,6 +17,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: pk_live_Y2xlcmsuYmFraW5nLmNzdWVybWFubi5kZSQ
+          VITE_WORKER_URL: https://baking-sync.cornelius-suermann.workers.dev
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
