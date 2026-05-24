@@ -23,15 +23,25 @@ function BakeEntry({ entry, steps, onDelete }) {
   const stepDurations = []
   if (steps && entry.stepCompletionTimes) {
     const times = entry.stepCompletionTimes
-    const keys = Object.keys(times).map(Number).sort((a, b) => a - b)
-    for (const idx of keys) {
-      const prevKey = keys[keys.indexOf(idx) - 1]
-      const start = prevKey != null ? times[prevKey] : null
-      const end = times[idx]
-      if (start != null && end > start) {
-        const mins = Math.round((end - start) / 60000)
-        const name = steps[idx]?.title ?? `Step ${idx + 1}`
-        stepDurations.push({ name, mins })
+    const activatedAt = entry.stepActivatedAt
+    if (activatedAt) {
+      // new records: use explicit activation timestamps
+      for (let idx = 0; idx < steps.length; idx++) {
+        const start = activatedAt[idx], end = times[idx]
+        if (start != null && end != null && end > start) {
+          stepDurations.push({ name: steps[idx]?.title ?? `Step ${idx + 1}`, mins: Math.round((end - start) / 60000) })
+        }
+      }
+    } else {
+      // old records: infer from consecutive completion times
+      const keys = Object.keys(times).map(Number).sort((a, b) => a - b)
+      for (const idx of keys) {
+        const prevKey = keys[keys.indexOf(idx) - 1]
+        const start = prevKey != null ? times[prevKey] : null
+        const end = times[idx]
+        if (start != null && end > start) {
+          stepDurations.push({ name: steps[idx]?.title ?? `Step ${idx + 1}`, mins: Math.round((end - start) / 60000) })
+        }
       }
     }
   }

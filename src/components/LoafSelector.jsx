@@ -1,4 +1,4 @@
-export default function LoafSelector({ value, onChange }) {
+export default function LoafSelector({ value, onChange, onReset }) {
   return (
     <div className="mb-6 flex items-center gap-3">
       <span className="text-sm text-stone-600 dark:text-stone-400">Quantity</span>
@@ -22,6 +22,14 @@ export default function LoafSelector({ value, onChange }) {
           aria-label="Increase quantity"
         >+</button>
       </div>
+      {onReset && (
+        <button
+          onClick={onReset}
+          className="ml-auto text-sm text-stone-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+        >
+          Reset
+        </button>
+      )}
     </div>
   )
 }

@@ -4,17 +4,26 @@ export function getDefaultDuration(step) {
   return (step.durationMin + step.durationMax) / 2
 }
 
-export function computeSchedule(steps, anchor, stepCompletionTimes = {}, stepDurationOverrides = {}) {
-  if (!anchor || !steps.length) return steps.map(() => null)
+export function computeSchedule(steps, anchor, stepCompletionTimes = {}, stepDurationOverrides = {}, stepActivatedAt = {}, completedSteps = []) {
+  // An in-progress recipe implicitly anchors to its real wall-clock start even
+  // without an explicit schedule anchor set by the user.
+  const implicitStart = stepActivatedAt[0] != null ? new Date(stepActivatedAt[0]) : null
+
+  if ((!anchor && !implicitStart) || !steps.length) return steps.map(() => null)
 
   const totalMinutes = steps.reduce((sum, s, i) =>
     sum + (stepDurationOverrides[i] != null ? stepDurationOverrides[i] : getDefaultDuration(s)), 0)
 
   let scheduleStart
-  if (anchor.type === 'finish') {
-    scheduleStart = subMinutes(new Date(anchor.datetime), totalMinutes)
+  if (anchor) {
+    if (anchor.type === 'finish') {
+      scheduleStart = subMinutes(new Date(anchor.datetime), totalMinutes)
+    } else {
+      scheduleStart = new Date(anchor.datetime)
+    }
   } else {
-    scheduleStart = new Date(anchor.datetime)
+    // No explicit anchor — derive start from actual recipe kick-off time
+    scheduleStart = implicitStart
   }
 
   const schedule = []
@@ -22,12 +31,17 @@ export function computeSchedule(steps, anchor, stepCompletionTimes = {}, stepDur
 
   for (let i = 0; i < steps.length; i++) {
     const startTime = new Date(cursor)
+    const dur = stepDurationOverrides[i] != null ? stepDurationOverrides[i] : getDefaultDuration(steps[i])
     let endTime
 
-    if (stepCompletionTimes[i] != null) {
+    if (completedSteps.includes(i) && stepCompletionTimes[i] != null) {
+      // actual completion time recorded when step was checked off
       endTime = new Date(stepCompletionTimes[i])
+    } else if (stepActivatedAt[i] != null) {
+      // step is active: anchor end at real wall-clock start + intended duration
+      endTime = addMinutes(new Date(stepActivatedAt[i]), dur)
     } else {
-      const dur = stepDurationOverrides[i] != null ? stepDurationOverrides[i] : getDefaultDuration(steps[i])
+      // not yet started: project forward from cursor
       endTime = addMinutes(startTime, dur)
     }
 

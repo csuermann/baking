@@ -60,11 +60,11 @@ export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
       {open && (
         <div className="px-4 py-4 bg-white dark:bg-stone-900 space-y-3">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <label>
+            <label className="min-w-0">
               <span className="text-xs text-stone-500 dark:text-stone-400 block mb-1">Start time</span>
               <input type="datetime-local" className={inputCls} value={startValue} onChange={handleStart} />
             </label>
-            <label>
+            <label className="min-w-0">
               <span className="text-xs text-stone-500 dark:text-stone-400 block mb-1">Target finish</span>
               <input type="datetime-local" className={inputCls} value={finishValue} onChange={handleFinish} />
             </label>

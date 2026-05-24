@@ -18,6 +18,7 @@ const PROGRESS_DEFAULTS = {
   scheduleAnchor: null,
   completedSteps: [],
   stepCompletionTimes: {},
+  stepActivatedAt: {},
   stepDurationOverrides: {},
   kneadDurationOverride: null,
   hasRated: false,
@@ -42,8 +43,8 @@ export default function RecipePage() {
   )
 
   const schedule = useMemo(
-    () => recipe ? computeSchedule(recipe.steps, progress.scheduleAnchor, progress.stepCompletionTimes, progress.stepDurationOverrides) : [],
-    [recipe, progress.scheduleAnchor, progress.stepCompletionTimes, progress.stepDurationOverrides]
+    () => recipe ? computeSchedule(recipe.steps, progress.scheduleAnchor, progress.stepCompletionTimes, progress.stepDurationOverrides, progress.stepActivatedAt, progress.completedSteps) : [],
+    [recipe, progress.scheduleAnchor, progress.stepCompletionTimes, progress.stepDurationOverrides, progress.stepActivatedAt, progress.completedSteps]
   )
 
   const handleStepDurationChange = useCallback((index, mins) => {
@@ -54,13 +55,6 @@ export default function RecipePage() {
         delete stepCompletionTimes[index]
       }
       return { ...prev, stepDurationOverrides, stepCompletionTimes }
-    })
-  }, [])
-
-  const handleTimerStart = useCallback((index, projectedEndMs) => {
-    setProgress(prev => {
-      if (prev.completedSteps.includes(index)) return prev
-      return { ...prev, stepCompletionTimes: { ...prev.stepCompletionTimes, [index]: projectedEndMs } }
     })
   }, [])
 
@@ -82,19 +76,11 @@ export default function RecipePage() {
       scheduleAnchor: progress.scheduleAnchor,
       completedSteps: progress.completedSteps,
       stepCompletionTimes: progress.stepCompletionTimes,
+      stepActivatedAt: progress.stepActivatedAt,
     }
     setHistory(prev => [record, ...prev])
     setProgress(prev => ({ ...prev, hasRated: true }))
   }, [progress, prefs, recipe, setHistory])
-
-  const handleTimerReset = useCallback(index => {
-    setProgress(prev => {
-      if (prev.completedSteps.includes(index)) return prev
-      const times = { ...prev.stepCompletionTimes }
-      delete times[index]
-      return { ...prev, stepCompletionTimes: times }
-    })
-  }, [])
 
   if (!recipe) {
     return (
@@ -114,17 +100,23 @@ export default function RecipePage() {
         const completedSteps = prev.completedSteps.filter(i => i !== index)
         const stepCompletionTimes = { ...prev.stepCompletionTimes }
         delete stepCompletionTimes[index]
-        return { ...prev, completedSteps, stepCompletionTimes }
+        const stepActivatedAt = { ...prev.stepActivatedAt }
+        delete stepActivatedAt[index + 1]
+        return { ...prev, completedSteps, stepCompletionTimes, stepActivatedAt }
       }
+      const now = Date.now()
       return {
         ...prev,
         completedSteps: [...prev.completedSteps, index],
-        stepCompletionTimes: { ...prev.stepCompletionTimes, [index]: Date.now() },
+        stepCompletionTimes: { ...prev.stepCompletionTimes, [index]: now },
+        stepActivatedAt: { ...prev.stepActivatedAt, [index + 1]: now },
       }
     })
   }
 
-  const resetProgress = () => setProgress(defaultProgress)
+  const resetProgress = () => {
+    setProgress(defaultProgress)
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
@@ -154,6 +146,7 @@ export default function RecipePage() {
       <LoafSelector
         value={progress.loaves}
         onChange={loaves => setProgress(p => ({ ...p, loaves }))}
+        onReset={resetProgress}
       />
 
       <SchedulePlanner
@@ -172,29 +165,33 @@ export default function RecipePage() {
 
       <IngredientsList ingredients={scaledIngredients} loaves={progress.loaves} />
 
+      {!progress.stepActivatedAt?.[0] && (
+        <div className="mb-6">
+          <button
+            onClick={() => setProgress(prev => ({ ...prev, stepActivatedAt: { ...prev.stepActivatedAt, 0: Date.now() } }))}
+            className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold transition-colors"
+          >
+            Start recipe
+          </button>
+        </div>
+      )}
+
       <StepList
         steps={recipe.steps}
         schedule={schedule}
         completedSteps={progress.completedSteps}
         onToggleStep={toggleStep}
-        slug={slug}
-        onTimerStart={handleTimerStart}
-        onTimerReset={handleTimerReset}
         stepDurationOverrides={progress.stepDurationOverrides}
         onStepDurationChange={handleStepDurationChange}
+        stepActivatedAt={progress.stepActivatedAt}
+        stepCompletionTimes={progress.stepCompletionTimes}
       />
 
       <BakingHistory history={history} recipe={recipe} onDelete={handleDeleteHistory} />
 
-      {progress.completedSteps.length > 0 && (
+      {progress.completedSteps.includes(recipe.steps.length - 1) && (
         <div className="mt-8 pt-8 border-t border-stone-200 dark:border-stone-800 text-center">
           <RateBake onRate={handleRate} hasRated={progress.hasRated} />
-          <button
-            onClick={resetProgress}
-            className="text-sm text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 underline"
-          >
-            Reset progress
-          </button>
         </div>
       )}
     </div>

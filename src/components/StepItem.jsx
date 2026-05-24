@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -20,12 +21,23 @@ function fmtDuration(step) {
   return step.isVariable ? `${fmtMins(step.durationMin)}–${fmtMins(step.durationMax)}` : fmtMins(step.durationMin)
 }
 
-export default function StepItem({ step, index, stepSchedule, isCompleted, onToggle, slug, onTimerStart, onTimerReset, durationOverride, onDurationChange }) {
-  const timerKey = `timer-${slug}-${index}`
+export default function StepItem({ step, index, stepSchedule, isCompleted, onToggle, durationOverride, onDurationChange, activatedAt, completedAt }) {
+  const [now, setNow] = useState(Date.now())
+  useEffect(() => {
+    if (!activatedAt || isCompleted) return
+    const id = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [activatedAt, isCompleted])
+
+  const actualMs = isCompleted && activatedAt && completedAt
+    ? completedAt - activatedAt
+    : !isCompleted && activatedAt
+      ? now - activatedAt
+      : null
+  const actualLabel = actualMs != null ? fmtMins(Math.round(actualMs / 60000)) : null
   const effectiveMins = durationOverride ?? getDefaultDuration(step)
   const effectiveDurationMs = effectiveMins * 60 * 1000
   const hasTimer = step.durationMin > 0
-  const showSlider = step.isVariable && step.durationMax > 120
 
   const startLabel = stepSchedule ? fmtTime(stepSchedule.startTime) : null
   const endLabel = stepSchedule ? fmtTime(stepSchedule.endTime) : null
@@ -66,6 +78,11 @@ export default function StepItem({ step, index, stepSchedule, isCompleted, onTog
             {durationLabel && (
               <span className="text-xs text-stone-400 dark:text-stone-500">({durationLabel})</span>
             )}
+            {isCompleted && actualLabel && (
+              <span className="text-xs font-medium text-green-600 dark:text-green-500">
+                took {actualLabel}
+              </span>
+            )}
           </div>
 
           {(startLabel || endLabel) && (
@@ -88,31 +105,14 @@ export default function StepItem({ step, index, stepSchedule, isCompleted, onTog
             </div>
           )}
 
-          {!isCompleted && showSlider && (
-            <div className="mt-3">
-              <div className="flex items-center justify-between text-xs text-stone-400 dark:text-stone-500 mb-1">
-                <span>{fmtMins(step.durationMin)}</span>
-                <span className="font-medium text-stone-600 dark:text-stone-300">{fmtMins(effectiveMins)}</span>
-                <span>{fmtMins(step.durationMax)}</span>
-              </div>
-              <input
-                type="range"
-                min={step.durationMin}
-                max={step.durationMax}
-                step={15}
-                value={effectiveMins}
-                onChange={e => onDurationChange(Number(e.target.value))}
-                className="w-full accent-amber-500"
-              />
-            </div>
-          )}
-
-          {!isCompleted && hasTimer && (
+          {!isCompleted && hasTimer && activatedAt != null && (
             <CountdownTimer
-              timerKey={timerKey}
-              durationMs={effectiveDurationMs}
-              onTimerStart={projectedEnd => onTimerStart?.(index, projectedEnd)}
-              onTimerReset={() => onTimerReset?.(index)}
+              elapsedMs={now - activatedAt}
+              intendedMs={effectiveDurationMs}
+              durationMin={step.durationMin}
+              durationMax={step.durationMax ?? step.durationMin}
+              isVariable={step.isVariable && step.durationMax > 120}
+              onIntendedChange={mins => onDurationChange(mins)}
             />
           )}
         </div>

@@ -32,10 +32,10 @@ export default function IngredientsList({ ingredients, loaves }) {
                   key={i}
                   className={isEven ? 'bg-white dark:bg-stone-900' : 'bg-stone-50 dark:bg-stone-800/50'}
                 >
-                  <td className="px-4 py-2.5 text-stone-700 dark:text-stone-300">{ing.name}</td>
-                  <td className="px-4 py-2.5 text-right font-mono font-medium text-stone-800 dark:text-stone-200">
+                  <td className="px-4 py-2.5 font-mono font-medium text-stone-800 dark:text-stone-200 w-16">
                     {ing.weight}g
                   </td>
+                  <td className="px-4 py-2.5 text-stone-700 dark:text-stone-300">{ing.name}</td>
                   <td className="px-4 py-2.5 text-right text-stone-400 dark:text-stone-600 text-xs w-12">
                     {ing.percent}%
                   </td>
