@@ -36,18 +36,21 @@ export default function CountdownTimer({ elapsedMs, intendedMs, durationMin, dur
   const maxMs = durationMax * 60 * 1000
   const minMs = durationMin * 60 * 1000
 
-  const isOverrun = elapsedMs > intendedMs
-  const remainingMs = Math.max(0, intendedMs - elapsedMs)
-  const isDone = elapsedMs >= intendedMs
+  // elapsedMs is null when the step hasn't started yet — show slider only, no fill/timer
+  const active = elapsedMs != null
+
+  const isOverrun = active && elapsedMs > intendedMs
+  const remainingMs = active ? Math.max(0, intendedMs - elapsedMs) : 0
+  const isDone = active && elapsedMs >= intendedMs
 
   // Thumb tracks whichever is further right: intended target or current elapsed
-  const thumbMs = Math.max(intendedMs, elapsedMs)
+  const thumbMs = active ? Math.max(intendedMs, elapsedMs) : intendedMs
   const thumbMins = Math.round(thumbMs / 60000)
 
   // All positions as percentages of the full track (0 → durationMax)
   const safe = maxMs > 0 ? maxMs : 1
   const minPct     = (minMs  / safe) * 100
-  const elapsedPct = Math.min(100, (elapsedMs  / safe) * 100)
+  const elapsedPct = active ? Math.min(100, (elapsedMs / safe) * 100) : 0
   const intendedPct = Math.min(100, (intendedMs / safe) * 100)
   const thumbPct   = Math.min(100, (thumbMs    / safe) * 100)
 
@@ -107,10 +110,12 @@ export default function CountdownTimer({ elapsedMs, intendedMs, durationMin, dur
         )}
 
         {/* Elapsed fill */}
-        <div
-          className="absolute h-2 left-0 rounded-l-full bg-amber-400 dark:bg-amber-500"
-          style={{ width: `${elapsedPct}%` }}
-        />
+        {active && (
+          <div
+            className="absolute h-2 left-0 rounded-l-full bg-amber-400 dark:bg-amber-500"
+            style={{ width: `${elapsedPct}%` }}
+          />
+        )}
 
         {/* Tick mark at original target when overrun */}
         {isOverrun && intendedPct > 0 && (
@@ -145,8 +150,8 @@ export default function CountdownTimer({ elapsedMs, intendedMs, durationMin, dur
         )}
       </div>
 
-      {/* Elapsed + countdown row */}
-      <div className="flex items-center mt-2">
+      {/* Elapsed + countdown row — only shown once the step is active */}
+      {active && <div className="flex items-center mt-2">
         <span className="text-sm text-stone-400 dark:text-stone-500 whitespace-nowrap">
           in step for <span className="text-stone-500 dark:text-stone-400 tabular-nums">{formatElapsed(elapsedMs)}</span>
         </span>
@@ -159,7 +164,7 @@ export default function CountdownTimer({ elapsedMs, intendedMs, durationMin, dur
             <span className="text-stone-500 dark:text-stone-400 tabular-nums">{formatCountdown(remainingMs)}</span> remaining
           </span>
         )}
-      </div>
+      </div>}
     </div>
   )
 }

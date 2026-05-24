@@ -93,9 +93,9 @@ export default function StepItem({ step, index, stepSchedule, isCompleted, onTog
             </div>
           )}
 
-          {!isCompleted && hasTimer && activatedAt != null && (
+          {!isCompleted && hasTimer && (activatedAt != null || step.isVariable) && (
             <CountdownTimer
-              elapsedMs={now - activatedAt}
+              elapsedMs={activatedAt != null ? now - activatedAt : null}
               intendedMs={effectiveDurationMs}
               durationMin={step.durationMin}
               durationMax={step.durationMax ?? step.durationMin}
