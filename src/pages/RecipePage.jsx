@@ -96,20 +96,46 @@ export default function RecipePage() {
   const toggleStep = index => {
     setProgress(prev => {
       const isCompleted = prev.completedSteps.includes(index)
+      const stepsCount = recipe.steps.length
+
       if (isCompleted) {
         const completedSteps = prev.completedSteps.filter(i => i !== index)
         const stepCompletionTimes = { ...prev.stepCompletionTimes }
         delete stepCompletionTimes[index]
+        const now = Date.now()
         const stepActivatedAt = { ...prev.stepActivatedAt }
-        delete stepActivatedAt[index + 1]
+        // Restart this step's clock from now.
+        stepActivatedAt[index] = now
+        // Clear activation for every subsequent step that is not yet completed —
+        // completed steps keep their timing data for history.
+        for (let j = index + 1; j < stepsCount; j++) {
+          if (!completedSteps.includes(j)) delete stepActivatedAt[j]
+        }
         return { ...prev, completedSteps, stepCompletionTimes, stepActivatedAt }
       }
+
       const now = Date.now()
+      const completedSteps = [...prev.completedSteps, index]
+      const stepActivatedAt = { ...prev.stepActivatedAt }
+      // Activate the first subsequent step whose entire prerequisite chain is now done.
+      // Skip over steps that are already activated or already completed (parallel work).
+      for (let j = index + 1; j < stepsCount; j++) {
+        if (stepActivatedAt[j] != null) {
+          // Already has a timer — if not done yet it blocks activation of j+1.
+          if (!completedSteps.includes(j)) break
+          continue
+        }
+        if (completedSteps.includes(j)) continue // completed without a timer, keep scanning
+        const allPrevDone = Array.from({ length: j }, (_, k) => k)
+          .every(k => completedSteps.includes(k))
+        if (allPrevDone) { stepActivatedAt[j] = now; break }
+        break // missing a prerequisite — nothing further can be activated
+      }
       return {
         ...prev,
-        completedSteps: [...prev.completedSteps, index],
+        completedSteps,
         stepCompletionTimes: { ...prev.stepCompletionTimes, [index]: now },
-        stepActivatedAt: { ...prev.stepActivatedAt, [index + 1]: now },
+        stepActivatedAt,
       }
     })
   }

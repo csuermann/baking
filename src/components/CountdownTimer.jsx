@@ -70,28 +70,26 @@ export default function CountdownTimer({ elapsedMs, intendedMs, durationMin, dur
       {/* Labels (variable steps only) — absolutely positioned over their track location */}
       {isVariable && (
         <div className="relative h-4 mb-1">
-          {/* Min label: sits at the start of the valid zone (not the left edge) */}
-          {Math.abs(thumbPct - minPct) > 8 && (
-            <span
-              className="absolute text-xs text-stone-400 dark:text-stone-500 -translate-x-1/2"
-              style={{ left: `${minPct}%` }}
-            >
-              {fmtMins(durationMin)}
-            </span>
-          )}
-          {/* Current target label: floats above the thumb */}
+          {/* Min label: stable anchor at the start of the valid zone */}
           <span
-            className="absolute text-xs font-medium text-stone-600 dark:text-stone-300 -translate-x-1/2"
-            style={{ left: `${Math.min(92, Math.max(8, thumbPct))}%` }}
+            className="absolute text-xs text-stone-400 dark:text-stone-500 -translate-x-1/2"
+            style={{ left: `${minPct}%` }}
           >
-            {fmtMins(thumbMins)}
+            {fmtMins(durationMin)}
           </span>
-          {/* Max label: right edge, hidden when thumb is very close */}
-          {Math.abs(thumbPct - 100) > 8 && (
-            <span className="absolute right-0 text-xs text-stone-400 dark:text-stone-500">
-              {fmtMins(durationMax)}
+          {/* Current target label: hidden only when close enough to overlap an anchor */}
+          {Math.abs(thumbPct - minPct) > 8 && Math.abs(thumbPct - 100) > 8 && (
+            <span
+              className="absolute text-xs font-medium text-stone-600 dark:text-stone-300 -translate-x-1/2"
+              style={{ left: `${thumbPct}%` }}
+            >
+              {fmtMins(thumbMins)}
             </span>
           )}
+          {/* Max label: stable anchor at the right edge */}
+          <span className="absolute right-0 text-xs text-stone-400 dark:text-stone-500">
+            {fmtMins(durationMax)}
+          </span>
         </div>
       )}
 

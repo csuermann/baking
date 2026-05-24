@@ -37,7 +37,7 @@ export default function IngredientsList({ ingredients, loaves }) {
                   </td>
                   <td className="px-4 py-2.5 text-stone-700 dark:text-stone-300">{ing.name}</td>
                   <td className="px-4 py-2.5 text-right text-stone-400 dark:text-stone-600 text-xs w-12">
-                    {ing.percent}%
+                    {(+ing.percent).toFixed(1)}%
                   </td>
                 </tr>
               )
