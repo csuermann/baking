@@ -32,7 +32,7 @@ function RecipeRow({ recipe }) {
         <div className="font-semibold text-stone-900 dark:text-stone-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
           {recipe.title}
         </div>
-        <div className="text-sm text-stone-500 dark:text-stone-400 line-clamp-1 mt-0.5">
+        <div className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
           {recipe.description}
         </div>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1.5 text-xs text-stone-400 dark:text-stone-500">
