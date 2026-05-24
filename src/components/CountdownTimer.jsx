@@ -141,7 +141,7 @@ export default function CountdownTimer({ elapsedMs, intendedMs, durationMin, dur
             type="range"
             min={durationMin}
             max={durationMax}
-            step={15}
+            step={1}
             value={clampedIntendedMins}
             onChange={e => onIntendedChange(Number(e.target.value))}
             className="absolute h-full opacity-0 cursor-pointer"
