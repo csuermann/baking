@@ -97,7 +97,7 @@ export default function StepItem({ step, index, stepSchedule, isCompleted, onTog
               intendedMs={effectiveDurationMs}
               durationMin={step.durationMin}
               durationMax={step.durationMax ?? step.durationMin}
-              isVariable={step.isVariable && step.durationMax > 120}
+              isVariable={step.isVariable}
               onIntendedChange={mins => onDurationChange(mins)}
             />
           )}
