@@ -7,14 +7,24 @@ export default function IngredientsList({ ingredients, loaves }) {
   const weightLabel = loaves > 1
     ? `${loaves} × ${fmt(perLoafWeight)}g = ${fmt(totalWeight)}g`
     : `${fmt(totalWeight)}g`
+  const hydration = Math.round(
+    ingredients.filter(i => !i.group && i.is_water).reduce((sum, i) => sum + (+i.percent), 0)
+  )
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold text-stone-800 dark:text-stone-200 mb-3">
-        Ingredients
-        <span className="text-sm font-normal text-stone-400 dark:text-stone-500 ml-2">
-          ({weightLabel})
+      <h2 className="text-xl font-semibold text-stone-800 dark:text-stone-200 mb-3 flex items-baseline justify-between">
+        <span>
+          Ingredients
+          <span className="text-sm font-normal text-stone-400 dark:text-stone-500 ml-2">
+            ({weightLabel})
+          </span>
         </span>
+        {hydration > 0 && (
+          <span className="text-sm font-normal text-stone-400 dark:text-stone-500">
+            {hydration}% hydration
+          </span>
+        )}
       </h2>
       <div className="border border-stone-200 dark:border-stone-700 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
