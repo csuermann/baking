@@ -1,35 +1,12 @@
 import { useMemo, useState } from 'react'
-import { addMinutes, subMinutes, format } from 'date-fns'
+import { addMinutes, format } from 'date-fns'
 import { getDefaultDuration } from '../utils/schedule'
 
-const DAY_OFFSETS = [
-  { label: 'Today',    offset: 0 },
-  { label: 'Tomorrow', offset: 1 },
-  { label: '+2 days',  offset: 2 },
-]
-
-function dateStringForOffset(offset) {
-  const d = new Date()
-  d.setDate(d.getDate() + offset)
-  return [
-    d.getFullYear(),
-    String(d.getMonth() + 1).padStart(2, '0'),
-    String(d.getDate()).padStart(2, '0'),
-  ].join('-')
-}
-
-function offsetForDateString(dateStr) {
-  // Returns 0/1/2 if dateStr matches today/tomorrow/+2, else null
-  for (let i = 0; i <= 2; i++) {
-    if (dateStr === dateStringForOffset(i)) return i
-  }
-  return null
-}
+const MAX_OFFSET_MINS = 72 * 60  // 72 hours ahead
+const STEP_MINS = 15
 
 export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
   const [open, setOpen] = useState(false)
-  const [pendingMode, setPendingMode] = useState('start')
-  const [pendingDay, setPendingDay] = useState(0)
 
   const totalMinutes = useMemo(
     () => steps.reduce((sum, s) => sum + getDefaultDuration(s), 0),
@@ -39,74 +16,27 @@ export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
   const m = Math.round(totalMinutes % 60)
   const durationLabel = m > 0 ? `${h}h ${m}m` : `${h}h`
 
-  // Derive controlled values from anchor prop
-  const anchorDatePart = anchor?.datetime?.split('T')[0] ?? ''
-  const anchorTimePart = anchor?.datetime?.split('T')[1] ?? ''
-  const anchorDayOffset = anchorDatePart ? offsetForDateString(anchorDatePart) : null
+  // Slider value = minutes from now to start. Clamped to [0, MAX].
+  const sliderValue = useMemo(() => {
+    if (!anchor) return 0
+    const diff = Math.round((new Date(anchor.datetime) - Date.now()) / 60000)
+    return Math.max(0, Math.min(MAX_OFFSET_MINS, Math.round(diff / STEP_MINS) * STEP_MINS))
+  }, [anchor])
 
-  const activeMode      = anchor ? anchor.type  : pendingMode
-  const activeDayOffset = anchor ? anchorDayOffset : pendingDay
-  const activeTime      = anchorTimePart
-
-  // Derived start / finish datetimes for the summary row
-  const startDatetime = anchor
-    ? (anchor.type === 'start'
-        ? anchor.datetime
-        : format(subMinutes(new Date(anchor.datetime), totalMinutes), "yyyy-MM-dd'T'HH:mm"))
-    : null
-  const finishDatetime = anchor
-    ? (anchor.type === 'finish'
-        ? anchor.datetime
-        : format(addMinutes(new Date(anchor.datetime), totalMinutes), "yyyy-MM-dd'T'HH:mm"))
-    : null
+  // Display times: use anchor if set, otherwise project from now
+  const startDate = anchor ? new Date(anchor.datetime) : addMinutes(new Date(), sliderValue)
+  const endDate   = addMinutes(startDate, totalMinutes)
+  const startLabel = (anchor && sliderValue > 0) ? format(startDate, 'EEE HH:mm') : 'Now'
+  const endLabel   = format(endDate, 'EEE HH:mm')
 
   const headerLabel = anchor
-    ? `${anchor.type === 'start' ? 'Start' : 'Finish'} ${format(new Date(anchor.datetime), 'EEE HH:mm')}`
+    ? `${format(startDate, 'EEE HH:mm')} → ${endLabel}`
     : `${durationLabel} total`
 
-  // --- handlers ---
-
-  const commit = (mode, dayOffset, time) => {
-    if (!time) { onAnchorChange(null); return }
-    onAnchorChange({ type: mode, datetime: `${dateStringForOffset(dayOffset)}T${time}` })
+  const handleChange = e => {
+    const mins = Number(e.target.value)
+    onAnchorChange({ type: 'start', datetime: format(addMinutes(new Date(), mins), "yyyy-MM-dd'T'HH:mm") })
   }
-
-  const handleModeToggle = newMode => {
-    setPendingMode(newMode)
-    if (anchor && anchor.type !== newMode) {
-      const shifted = newMode === 'finish'
-        ? addMinutes(new Date(anchor.datetime), totalMinutes)
-        : subMinutes(new Date(anchor.datetime), totalMinutes)
-      onAnchorChange({ type: newMode, datetime: format(shifted, "yyyy-MM-dd'T'HH:mm") })
-    }
-  }
-
-  // Default to current time (minute floored to nearest 15) when no anchor is set
-  const nowHour   = String(new Date().getHours()).padStart(2, '0')
-  const nowMinute = String(Math.floor(new Date().getMinutes() / 15) * 15).padStart(2, '0')
-  const activeHour   = activeTime ? activeTime.split(':')[0] : nowHour
-  const activeMinute = activeTime ? activeTime.split(':')[1] : nowMinute
-
-  const handleDayToggle = offset => {
-    setPendingDay(offset)
-    commit(activeMode, offset, `${activeHour}:${activeMinute}`)
-  }
-
-  const handleHourChange = hour => {
-    commit(activeMode, activeDayOffset ?? pendingDay, hour ? `${hour}:${activeMinute}` : '')
-  }
-
-  const handleMinuteChange = minute => {
-    if (activeHour) commit(activeMode, activeDayOffset ?? pendingDay, `${activeHour}:${minute}`)
-  }
-
-  // --- styles ---
-  const chip = (active) =>
-    `px-3 py-1.5 rounded-lg text-sm border transition-colors ${
-      active
-        ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-300 font-medium'
-        : 'bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-stone-600'
-    }`
 
   return (
     <div className="mb-6 border border-stone-200 dark:border-stone-700 rounded-xl overflow-hidden">
@@ -121,74 +51,45 @@ export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
       </button>
 
       {open && (
-        <div className="px-4 py-4 bg-white dark:bg-stone-900 space-y-3">
+        <div className="px-4 py-4 bg-white dark:bg-stone-900">
 
-          {/* Mode toggle */}
-          <div className="flex gap-2">
-            <button className={chip(activeMode === 'start')}  onClick={() => handleModeToggle('start')}>
-              Start at
-            </button>
-            <button className={chip(activeMode === 'finish')} onClick={() => handleModeToggle('finish')}>
-              Finish at
-            </button>
+          {/* Start / End labels */}
+          <div className="flex justify-between mb-3">
+            <div>
+              <div className="text-xs text-stone-400 dark:text-stone-500 mb-0.5">Start</div>
+              <div className="text-sm font-semibold text-stone-800 dark:text-stone-200">{startLabel}</div>
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-stone-400 dark:text-stone-500 mb-0.5">Est. end</div>
+              <div className="text-sm font-semibold text-stone-800 dark:text-stone-200">{endLabel}</div>
+            </div>
           </div>
 
-          {/* Day chips */}
-          <div className="flex gap-2">
-            {DAY_OFFSETS.map(({ label, offset }) => (
-              <button key={offset} className={chip(activeDayOffset === offset)} onClick={() => handleDayToggle(offset)}>
-                {label}
-              </button>
-            ))}
+          {/* Slider */}
+          <input
+            type="range"
+            min={0}
+            max={MAX_OFFSET_MINS}
+            step={STEP_MINS}
+            value={sliderValue}
+            onChange={handleChange}
+            className="w-full accent-amber-500"
+          />
+
+          <div className="flex justify-between mt-1">
+            <span className="text-xs text-stone-400 dark:text-stone-500">Now</span>
+            <span className="text-xs text-stone-400 dark:text-stone-500">+72 h</span>
           </div>
 
-          {/* Time selects — two <select> elements never overflow on iOS */}
-          <div className="flex items-center gap-2">
-            <select
-              value={activeHour}
-              onChange={e => handleHourChange(e.target.value)}
-              className="flex-1 text-base border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-2 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
-            >
-              <option value="">HH</option>
-              {Array.from({ length: 24 }, (_, i) => {
-                const v = String(i).padStart(2, '0')
-                return <option key={v} value={v}>{v}</option>
-              })}
-            </select>
-            <span className="text-stone-400 dark:text-stone-500 font-semibold select-none">:</span>
-            <select
-              value={activeMinute}
-              onChange={e => handleMinuteChange(e.target.value)}
-              className="flex-1 text-base border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-2 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
-            >
-              <option value="">MM</option>
-              {['00', '15', '30', '45'].map(v => (
-                <option key={v} value={v}>{v}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Summary / clear */}
-          {anchor && startDatetime && finishDatetime ? (
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-stone-400 dark:text-stone-500">
-                {format(new Date(startDatetime), 'EEE HH:mm')}
-                {' → '}
-                {format(new Date(finishDatetime), 'EEE HH:mm')}
-                {' '}({durationLabel})
-              </span>
+          {anchor && (
+            <div className="mt-3 flex justify-end">
               <button
                 onClick={() => onAnchorChange(null)}
-                className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 underline ml-4 flex-shrink-0"
+                className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 underline"
               >
                 Clear
               </button>
             </div>
-          ) : (
-            <p className="text-xs text-stone-400 dark:text-stone-500">
-              Total estimated time:{' '}
-              <strong className="text-stone-600 dark:text-stone-400">{durationLabel}</strong>
-            </p>
           )}
         </div>
       )}
