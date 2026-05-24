@@ -64,13 +64,13 @@ Teig zu einer Kugel formen, mit Frischhaltefolie und einem Tuch abdecken. An ein
 
 duration: 15
 
-Butter, Zimtzucker, Kakaopulver und ggf. Kardamom zu einer glatten Creme verrühren. Teig kurz durchkneten und auf leicht bemehlter Arbeitsfläche zu einem **Rechteck von ca. 40 × 60 cm** ausrollen. Zimtbutter gleichmäßig auf dem gesamten Teig verstreichen.
+Butter, Zimtzucker, Kakaopulver und ggf. Kardamom zu einer glatten Creme verrühren. Teig kurz durchkneten und auf leicht bemehlter Arbeitsfläche zu einem **Rechteck von ca. 40 cm × (2 x Anzahl Schnecken) cm** ausrollen. Zimtbutter gleichmäßig auf dem gesamten Teig verstreichen.
 
 ### Formen der Schnecken
 
 duration: 15
 
-Den Teig wie einen **Dreifachbrief falten** (unteres Drittel hochklappen, oberes Drittel drüberschlagen). Den gefalteten Teig quer in **12 Streifen** von ca. 2 cm Breite schneiden. Jeden Streifen **einmal leicht verdrehen**, dann zu einer Spirale aufrollen und mit dem Ende nach unten auf ein mit Backpapier ausgelegtes Blech setzen. **Etwas Abstand** lassen, die Schnecken gehen noch auf.
+Den Teig wie einen **Dreifachbrief falten** (unteres Drittel hochklappen, oberes Drittel drüberschlagen). Den gefalteten Teig quer in **Streifen von ca. 2 cm Breite** schneiden. Jeden Streifen **einmal leicht verdrehen**, dann zu einer Spirale aufrollen und mit dem Ende nach unten auf ein mit Backpapier ausgelegtes Blech setzen. **Etwas Abstand** lassen, die Schnecken gehen noch auf.
 
 ### Zweite Gehzeit
 
