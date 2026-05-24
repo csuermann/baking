@@ -2,45 +2,101 @@ import { useMemo, useState } from 'react'
 import { addMinutes, subMinutes, format } from 'date-fns'
 import { getDefaultDuration } from '../utils/schedule'
 
-function toDatetimeLocal(date) {
-  return format(date, "yyyy-MM-dd'T'HH:mm")
+const DAY_OFFSETS = [
+  { label: 'Today',    offset: 0 },
+  { label: 'Tomorrow', offset: 1 },
+  { label: '+2 days',  offset: 2 },
+]
+
+function dateStringForOffset(offset) {
+  const d = new Date()
+  d.setDate(d.getDate() + offset)
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, '0'),
+    String(d.getDate()).padStart(2, '0'),
+  ].join('-')
+}
+
+function offsetForDateString(dateStr) {
+  // Returns 0/1/2 if dateStr matches today/tomorrow/+2, else null
+  for (let i = 0; i <= 2; i++) {
+    if (dateStr === dateStringForOffset(i)) return i
+  }
+  return null
 }
 
 export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
   const [open, setOpen] = useState(false)
+  const [pendingMode, setPendingMode] = useState('start')
+  const [pendingDay, setPendingDay] = useState(0)
 
   const totalMinutes = useMemo(
     () => steps.reduce((sum, s) => sum + getDefaultDuration(s), 0),
     [steps]
   )
-
   const h = Math.floor(totalMinutes / 60)
   const m = Math.round(totalMinutes % 60)
   const durationLabel = m > 0 ? `${h}h ${m}m` : `${h}h`
 
-  const startValue = useMemo(() => {
-    if (!anchor) return ''
-    if (anchor.type === 'start') return anchor.datetime
-    return toDatetimeLocal(subMinutes(new Date(anchor.datetime), totalMinutes))
-  }, [anchor, totalMinutes])
+  // Derive controlled values from anchor prop
+  const anchorDatePart = anchor?.datetime?.split('T')[0] ?? ''
+  const anchorTimePart = anchor?.datetime?.split('T')[1] ?? ''
+  const anchorDayOffset = anchorDatePart ? offsetForDateString(anchorDatePart) : null
 
-  const finishValue = useMemo(() => {
-    if (!anchor) return ''
-    if (anchor.type === 'finish') return anchor.datetime
-    return toDatetimeLocal(addMinutes(new Date(anchor.datetime), totalMinutes))
-  }, [anchor, totalMinutes])
+  const activeMode      = anchor ? anchor.type  : pendingMode
+  const activeDayOffset = anchor ? anchorDayOffset : pendingDay
+  const activeTime      = anchorTimePart
 
-  const handleStart = e => {
-    if (!e.target.value) { onAnchorChange(null); return }
-    onAnchorChange({ type: 'start', datetime: e.target.value })
+  // Derived start / finish datetimes for the summary row
+  const startDatetime = anchor
+    ? (anchor.type === 'start'
+        ? anchor.datetime
+        : format(subMinutes(new Date(anchor.datetime), totalMinutes), "yyyy-MM-dd'T'HH:mm"))
+    : null
+  const finishDatetime = anchor
+    ? (anchor.type === 'finish'
+        ? anchor.datetime
+        : format(addMinutes(new Date(anchor.datetime), totalMinutes), "yyyy-MM-dd'T'HH:mm"))
+    : null
+
+  const headerLabel = anchor
+    ? `${anchor.type === 'start' ? 'Start' : 'Finish'} ${format(new Date(anchor.datetime), 'EEE HH:mm')}`
+    : `${durationLabel} total`
+
+  // --- handlers ---
+
+  const commit = (mode, dayOffset, time) => {
+    if (!time) { onAnchorChange(null); return }
+    onAnchorChange({ type: mode, datetime: `${dateStringForOffset(dayOffset)}T${time}` })
   }
 
-  const handleFinish = e => {
-    if (!e.target.value) { onAnchorChange(null); return }
-    onAnchorChange({ type: 'finish', datetime: e.target.value })
+  const handleModeToggle = newMode => {
+    setPendingMode(newMode)
+    if (anchor && anchor.type !== newMode) {
+      const shifted = newMode === 'finish'
+        ? addMinutes(new Date(anchor.datetime), totalMinutes)
+        : subMinutes(new Date(anchor.datetime), totalMinutes)
+      onAnchorChange({ type: newMode, datetime: format(shifted, "yyyy-MM-dd'T'HH:mm") })
+    }
   }
 
-  const inputCls = 'w-full max-w-full text-base border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-1.5 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-400'
+  const handleDayToggle = offset => {
+    setPendingDay(offset)
+    if (activeTime) commit(activeMode, offset, activeTime)
+  }
+
+  const handleTimeChange = e => {
+    commit(activeMode, activeDayOffset ?? pendingDay, e.target.value)
+  }
+
+  // --- styles ---
+  const chip = (active) =>
+    `px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+      active
+        ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-300 font-medium'
+        : 'bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-stone-600'
+    }`
 
   return (
     <div className="mb-6 border border-stone-200 dark:border-stone-700 rounded-xl overflow-hidden">
@@ -50,35 +106,61 @@ export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
       >
         <span className="font-medium text-stone-700 dark:text-stone-300">Schedule</span>
         <span className="text-xs text-stone-400 dark:text-stone-500">
-          {anchor
-            ? (anchor.type === 'finish' ? `Finish: ${format(new Date(anchor.datetime), 'EEE HH:mm')}` : `Start: ${format(new Date(anchor.datetime), 'EEE HH:mm')}`)
-            : `${durationLabel} total`
-          } {open ? '▲' : '▼'}
+          {headerLabel} {open ? '▲' : '▼'}
         </span>
       </button>
 
       {open && (
         <div className="px-4 py-4 bg-white dark:bg-stone-900 space-y-3">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <label className="min-w-0">
-              <span className="text-xs text-stone-500 dark:text-stone-400 block mb-1">Start time</span>
-              <input type="datetime-local" className={inputCls} value={startValue} onChange={handleStart} />
-            </label>
-            <label className="min-w-0">
-              <span className="text-xs text-stone-500 dark:text-stone-400 block mb-1">Target finish</span>
-              <input type="datetime-local" className={inputCls} value={finishValue} onChange={handleFinish} />
-            </label>
-          </div>
-          <p className="text-xs text-stone-400 dark:text-stone-500">
-            Total estimated time: <strong className="text-stone-600 dark:text-stone-400">{durationLabel}</strong>
-          </p>
-          {anchor && (
-            <button
-              onClick={() => onAnchorChange(null)}
-              className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 underline"
-            >
-              Clear schedule
+
+          {/* Mode toggle */}
+          <div className="flex gap-2">
+            <button className={chip(activeMode === 'start')}  onClick={() => handleModeToggle('start')}>
+              Start at
             </button>
+            <button className={chip(activeMode === 'finish')} onClick={() => handleModeToggle('finish')}>
+              Finish at
+            </button>
+          </div>
+
+          {/* Day chips */}
+          <div className="flex gap-2">
+            {DAY_OFFSETS.map(({ label, offset }) => (
+              <button key={offset} className={chip(activeDayOffset === offset)} onClick={() => handleDayToggle(offset)}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Time input */}
+          <input
+            type="time"
+            className="w-full text-base border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-2 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            value={activeTime}
+            onChange={handleTimeChange}
+          />
+
+          {/* Summary / clear */}
+          {anchor && startDatetime && finishDatetime ? (
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-stone-400 dark:text-stone-500">
+                {format(new Date(startDatetime), 'EEE HH:mm')}
+                {' → '}
+                {format(new Date(finishDatetime), 'EEE HH:mm')}
+                {' '}({durationLabel})
+              </span>
+              <button
+                onClick={() => onAnchorChange(null)}
+                className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 underline ml-4 flex-shrink-0"
+              >
+                Clear
+              </button>
+            </div>
+          ) : (
+            <p className="text-xs text-stone-400 dark:text-stone-500">
+              Total estimated time:{' '}
+              <strong className="text-stone-600 dark:text-stone-400">{durationLabel}</strong>
+            </p>
           )}
         </div>
       )}
