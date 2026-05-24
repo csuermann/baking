@@ -146,10 +146,6 @@ export default function RecipePage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      <Link to="/" className="text-sm text-amber-600 hover:underline mb-6 inline-block">
-        ← All recipes
-      </Link>
-
       <header className="mb-8">
 
         <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 mb-3">{recipe.title}</h1>

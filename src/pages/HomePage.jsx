@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
 import { recipes } from '../utils/parseRecipes'
+import useLocalStorage from '../hooks/useLocalStorage'
 
 function getHistory(slug) {
   try {
@@ -62,17 +63,37 @@ function RecipeRow({ recipe }) {
 }
 
 export default function HomePage() {
+  const langs = useMemo(() => [...new Set(recipes.map(r => r.lang))].sort(), [])
+  const [lang, setLang] = useLocalStorage('recipe-language', langs.includes('en') ? 'en' : langs[0])
+  const visible = recipes.filter(r => r.lang === lang)
+
+  const LANG_FLAGS = { de: '🇩🇪', en: '🇬🇧' }
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 mb-2">Recipes</h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">Recipes</h1>
+          {langs.length > 1 && (
+            <select
+              value={lang}
+              onChange={e => setLang(e.target.value)}
+              className="text-lg bg-transparent border-none outline-none cursor-pointer"
+              aria-label="Filter by language"
+            >
+              {langs.map(l => (
+                <option key={l} value={l}>{LANG_FLAGS[l] ?? l.toUpperCase()}</option>
+              ))}
+            </select>
+          )}
+        </div>
         <p className="text-stone-500 dark:text-stone-400">Bake great things, one recipe at a time.</p>
       </div>
-      {recipes.length === 0 ? (
+      {visible.length === 0 ? (
         <p className="text-stone-400 dark:text-stone-600 text-center py-16">No recipes yet.</p>
       ) : (
         <div className="divide-y divide-stone-100 dark:divide-stone-800">
-          {recipes.map(recipe => (
+          {visible.map(recipe => (
             <RecipeRow key={recipe.slug} recipe={recipe} />
           ))}
         </div>
