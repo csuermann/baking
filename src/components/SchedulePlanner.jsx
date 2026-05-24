@@ -40,7 +40,7 @@ export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
     onAnchorChange({ type: 'finish', datetime: e.target.value })
   }
 
-  const inputCls = 'w-full text-sm border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-1.5 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-400'
+  const inputCls = 'w-full max-w-full text-base border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-1.5 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-400'
 
   return (
     <div className="mb-6 border border-stone-200 dark:border-stone-700 rounded-xl overflow-hidden">
