@@ -11,12 +11,15 @@ import WaterTempCalc from '../components/WaterTempCalc'
 import SchedulePlanner from '../components/SchedulePlanner'
 import IngredientsList from '../components/IngredientsList'
 import StepList from '../components/StepList'
+import RateBake from '../components/RateBake'
+import BakingHistory from '../components/BakingHistory'
 
 const PROGRESS_DEFAULTS = {
   scheduleAnchor: null,
   completedSteps: [],
   stepCompletionTimes: {},
   kneadDurationOverride: null,
+  hasRated: false,
 }
 
 export default function RecipePage() {
@@ -25,6 +28,7 @@ export default function RecipePage() {
 
   const defaultProgress = { loaves: recipe?.defaultQuantity ?? 1, ...PROGRESS_DEFAULTS }
   const [progress, setProgress] = useLocalStorage(`baking-progress-${slug}`, defaultProgress)
+  const [history, setHistory] = useLocalStorage(`baking-history-${slug}`, [])
   const [prefs, setPrefs] = useLocalStorage('baking-prefs', {
     roomTemp: 22,
     flourTemp: 20,
@@ -77,6 +81,25 @@ export default function RecipePage() {
       return { ...prev, stepCompletionTimes: { ...prev.stepCompletionTimes, [index]: projectedEndMs } }
     })
   }, [])
+
+  const handleRate = useCallback(rating => {
+    const record = {
+      id: Date.now(),
+      timestamp: Date.now(),
+      rating,
+      loaves: progress.loaves,
+      roomTemp: prefs.roomTemp,
+      flourTemp: prefs.flourTemp,
+      risePerMin: prefs.risePerMin,
+      kneadDurationMin: progress.kneadDurationOverride ?? recipe.kneadDurationMin,
+      targetDoughTemp: recipe.targetDoughTemp,
+      scheduleAnchor: progress.scheduleAnchor,
+      completedSteps: progress.completedSteps,
+      stepCompletionTimes: progress.stepCompletionTimes,
+    }
+    setHistory(prev => [record, ...prev])
+    setProgress(prev => ({ ...prev, hasRated: true }))
+  }, [progress, prefs, recipe, setHistory])
 
   const handleTimerReset = useCallback(index => {
     setProgress(prev => {
@@ -143,8 +166,11 @@ export default function RecipePage() {
         onTimerReset={handleTimerReset}
       />
 
+      <BakingHistory history={history} recipe={recipe} />
+
       {progress.completedSteps.length > 0 && (
         <div className="mt-8 pt-8 border-t border-stone-200 dark:border-stone-800 text-center">
+          <RateBake onRate={handleRate} hasRated={progress.hasRated} />
           <button
             onClick={resetProgress}
             className="text-sm text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 underline"
