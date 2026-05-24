@@ -3,6 +3,7 @@ import { SignedIn, SignedOut, SignIn, UserButton } from '@clerk/clerk-react'
 import { useSync } from './hooks/useSync'
 import HomePage from './pages/HomePage'
 import RecipePage from './pages/RecipePage'
+import RecipeEditorPage from './pages/RecipeEditorPage'
 
 const clerkDarkAppearance = {
   variables: {
@@ -28,10 +29,11 @@ const clerkDarkAppearance = {
 
 function AppHeader() {
   const onRecipePage = useMatch('/recipe/:slug')
+  const onEditorPage = useMatch('/recipe/:slug/edit') || useMatch('/recipe/new')
   return (
     <header className="border-b border-stone-800 sticky top-0 bg-stone-950/90 backdrop-blur-sm z-10">
       <div className="max-w-3xl mx-auto px-4 h-14 flex items-center relative">
-        {onRecipePage && (
+        {(onRecipePage || onEditorPage) && (
           <Link
             to="/"
             aria-label="Back to recipes"
@@ -62,6 +64,8 @@ function AppShell() {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/recipe/new" element={<RecipeEditorPage />} />
+            <Route path="/recipe/:slug/edit" element={<RecipeEditorPage />} />
             <Route path="/recipe/:slug" element={<RecipePage />} />
           </Routes>
         </main>

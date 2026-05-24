@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { getRecipeBySlug } from '../utils/parseRecipes'
+import { parseRecipeMarkdown } from '../utils/parseRecipeMarkdown'
 import { scaleIngredients } from '../utils/scaling'
 import { computeSchedule } from '../utils/schedule'
 import useLocalStorage from '../hooks/useLocalStorage'
@@ -25,9 +26,24 @@ const PROGRESS_DEFAULTS = {
   hasRated: false,
 }
 
+function getAnyRecipeBySlug(slug) {
+  const builtin = getRecipeBySlug(slug)
+  if (builtin) return builtin
+  try {
+    const raw = localStorage.getItem('baking-custom-recipes')
+    if (!raw) return null
+    const map = JSON.parse(raw)
+    const entry = map[slug]
+    if (!entry) return null
+    return { ...parseRecipeMarkdown(entry.markdown), slug, lang: 'custom', isCustom: true }
+  } catch {
+    return null
+  }
+}
+
 export default function RecipePage() {
   const { slug } = useParams()
-  const recipe = getRecipeBySlug(slug)
+  const recipe = getAnyRecipeBySlug(slug)
 
   const defaultProgress = { loaves: recipe?.defaultQuantity ?? 1, ...PROGRESS_DEFAULTS }
   const [progress, _setProgress] = useLocalStorage(`baking-progress-${slug}`, defaultProgress)
@@ -153,8 +169,17 @@ export default function RecipePage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <header className="mb-8">
-
-        <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 mb-3">{recipe.title}</h1>
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">{recipe.title}</h1>
+          {recipe.isCustom && (
+            <Link
+              to={`/recipe/${slug}/edit`}
+              className="flex-shrink-0 mt-1 text-sm text-stone-400 hover:text-amber-400 border border-stone-700 rounded-lg px-3 py-1.5 transition-colors"
+            >
+              Edit
+            </Link>
+          )}
+        </div>
         {recipe.intro && (
           <div className="prose prose-stone dark:prose-invert text-stone-600 dark:text-stone-400 max-w-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{recipe.intro}</ReactMarkdown>
