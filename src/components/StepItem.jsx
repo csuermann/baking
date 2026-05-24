@@ -18,7 +18,7 @@ function fmtMins(min) {
 
 function fmtDuration(step) {
   if (step.durationMin === 0) return null
-  return step.isVariable ? `${fmtMins(step.durationMin)}–${fmtMins(step.durationMax)}` : fmtMins(step.durationMin)
+  return step.isVariable ? `${fmtMins(step.durationMin)} ... ${fmtMins(step.durationMax)}` : fmtMins(step.durationMin)
 }
 
 export default function StepItem({ step, index, stepSchedule, isCompleted, onToggle, durationOverride, onDurationChange, activatedAt, completedAt, recipeStarted }) {
