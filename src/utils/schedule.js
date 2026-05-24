@@ -1,7 +1,7 @@
 import { addMinutes, subMinutes } from 'date-fns'
 
 export function getDefaultDuration(step) {
-  return (step.durationMin + step.durationMax) / 2
+  return step.durationMin
 }
 
 export function computeSchedule(steps, anchor, stepCompletionTimes = {}, stepDurationOverrides = {}, stepActivatedAt = {}, completedSteps = []) {
