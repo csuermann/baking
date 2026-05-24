@@ -23,7 +23,7 @@ ingredients:
     percent: 3.2
   - group: "Autolyseteig"
   - name: Wasser (30°C)
-    percent: 53.2
+    percent: 45.2
     is_water: true
   - name: Dinkelmehl 630
     percent: 89.5
@@ -32,6 +32,9 @@ ingredients:
     percent: 2.3
   - name: Ascorbinsäure (Vitamin C)
     percent: 0.16
+  - name: Bassinage (Restwasser, 30°C)
+    percent: 8.0
+    is_water: true
 ---
 
 Dreistufiges Dinkelsauerteigbrot mit festem Weizen-Anstellgut. Das **Kochstück** verkleistert einen Teil des Mehls und sorgt für eine besonders saftige, langfrisch bleibende Krume. Der **Autolyseteig** entwickelt das Klebergerüst schonend, bevor der Hauptteig zusammengeführt wird. Die **kalte Stückgare** über Nacht verlangsamt die Gärung, vertieft das Aroma und macht den Teigling fester — so lässt er sich am nächsten Tag direkt aus dem Kühlschrank einschneiden und backen. Gebacken im geschlossenen gusseisernen Topf entsteht eine rösche Kruste mit gutem Ausbund.
@@ -60,13 +63,13 @@ Den Sauerteig **2–3 Stunden bei 28°C** reifen lassen. Er ist reif, wenn das V
 
 duration: 35
 
-Wasser (30°C), Dinkelmehl 630 und das gesamte abgekühlte Kochstück (~120g) vermischen, bis sich ein mittelfester, homogener Teig gebildet hat. Zieltemperatur: ca. **24°C**. Abgedeckt **30 Minuten** bei 24°C quellen lassen.
+Wasser (30°C), Dinkelmehl 630 und das gesamte abgekühlte Kochstück (~120g) vermischen, bis sich ein fester, homogener Teig gebildet hat — er wirkt bewusst etwas trocken, die Bassinage kommt später. Zieltemperatur: ca. **24°C**. Abgedeckt **30 Minuten** bei 24°C quellen lassen.
 
 ### Hauptteig kneten
 
-duration: 10
+duration: 15
 
-Den gesamten reifen Sauerteig (~120g), Salz und Ascorbinsäure zum Autolyseteig geben. Zu einem glatten, mittelfesten Teig kneten, bis sich eine dünne Teighaut ausziehen lässt (**Fenstertest**). Zieltemperatur: **26°C**.
+Den gesamten reifen Sauerteig, Salz und Ascorbinsäure zum Autolyseteig geben. Kneten bis sich der Teig von der Schüssel löst und eine erste Spannung aufgebaut hat (ca. 8–10 Minuten). Anschließend die **Bassinage** esslöffelweise einarbeiten: jeweils etwas Wasser zugeben, vollständig einkneten, bevor ggf. die nächste Portion folgt. Der Teig soll glatt und mittelfest bleiben. Abschließend den **Fenstertest** machen: der Teig lässt sich hauchdünn ausziehen, ohne zu reißen. Zieltemperatur: **26°C**.
 
 ### Stockgare mit Dehnen und Falten
 
