@@ -147,16 +147,16 @@ export default function CountdownTimer({ elapsedMs, intendedMs, durationMin, dur
 
       {/* Elapsed + countdown row */}
       <div className="flex items-center mt-2">
-        <span className="text-sm text-stone-400 dark:text-stone-500 tabular-nums whitespace-nowrap">
-          in step for {formatElapsed(elapsedMs)}
+        <span className="text-sm text-stone-400 dark:text-stone-500 whitespace-nowrap">
+          in step for <span className="text-stone-500 dark:text-stone-400 tabular-nums">{formatElapsed(elapsedMs)}</span>
         </span>
         {isDone ? (
           <span className="ml-auto text-sm text-red-500 dark:text-red-400 tabular-nums whitespace-nowrap">
             {formatElapsed(elapsedMs - intendedMs)} overdue
           </span>
         ) : (
-          <span className="ml-auto text-sm text-stone-400 dark:text-stone-500 tabular-nums whitespace-nowrap">
-            {formatCountdown(remainingMs)} remaining
+          <span className="ml-auto text-sm text-stone-400 dark:text-stone-500 whitespace-nowrap">
+            <span className="text-stone-500 dark:text-stone-400 tabular-nums">{formatCountdown(remainingMs)}</span> remaining
           </span>
         )}
       </div>

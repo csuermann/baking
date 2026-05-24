@@ -1,7 +1,6 @@
 ---
 title: Classic Sourdough Boule
 description: An everyday open-crumb loaf with a blistered, crackling crust. Uses a cold-retard method for maximum flavour — most of the active work happens in one afternoon, then the dough does the rest overnight in the fridge.
-tags: [beginner, boule, classic]
 target_dough_temp: 25
 flour_base_g: 500
 knead_duration_min: 5

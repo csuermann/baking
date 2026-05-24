@@ -1,7 +1,6 @@
 ---
 title: San Francisco Sourdough Bread
 description: A high-hydration spelt loaf with a tender open crumb. Built in three stages — a levain, a tangzhong for moisture retention, and an autolyse — then brought together into the final dough.
-tags: [advanced, spelt, boule]
 target_dough_temp: 26
 flour_base_g: 620
 knead_duration_min: 10

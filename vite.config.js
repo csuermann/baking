@@ -17,13 +17,15 @@ function parseSteps(stepsMarkdown) {
       let isVariable = false
       let bodyStart = 1
 
-      if (lines.length > 1) {
-        const m = lines[1].trim().match(/^duration:\s*(\d+)(?:-(\d+))?$/)
+      // Accept an optional blank line between the headline and the duration tag.
+      const durationLineIdx = lines[1]?.trim() === '' ? 2 : 1
+      if (lines.length > durationLineIdx) {
+        const m = lines[durationLineIdx].trim().match(/^duration:\s*(\d+)(?:-(\d+))?$/)
         if (m) {
           durationMin = parseInt(m[1], 10)
           durationMax = m[2] ? parseInt(m[2], 10) : durationMin
           isVariable = durationMin !== durationMax
-          bodyStart = 2
+          bodyStart = durationLineIdx + 1
         }
       }
 
@@ -52,7 +54,7 @@ function markdownRecipePlugin() {
         title: fm.title || '',
         description: fm.description || '',
         thumbnail: fm.thumbnail || null,
-        tags: fm.tags || [],
+
         targetDoughTemp: fm.target_dough_temp || 25,
         flourBaseG: fm.flour_base_g || 500,
         defaultQuantity: fm.default_quantity ?? 1,

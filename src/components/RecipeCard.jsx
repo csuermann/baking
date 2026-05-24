@@ -24,16 +24,7 @@ export default function RecipeCard({ recipe }) {
         </div>
       )}
       <div className="p-4">
-        <div className="flex flex-wrap gap-1.5 mb-2">
-          {recipe.tags.map(tag => (
-            <span
-              key={tag}
-              className="text-xs px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+
         <h2 className="font-semibold text-stone-900 dark:text-stone-100 mb-1">{recipe.title}</h2>
         <p className="text-sm text-stone-500 dark:text-stone-400 line-clamp-2 mb-3">{recipe.description}</p>
         <div className="flex items-center gap-3 text-xs text-stone-400 dark:text-stone-500">

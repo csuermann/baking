@@ -85,20 +85,6 @@ export default function StepItem({ step, index, stepSchedule, isCompleted, onTog
             )}
           </div>
 
-          {(startLabel || endLabel) && (
-            <div className="text-xs text-stone-400 dark:text-stone-500 mb-2 flex flex-wrap gap-x-4">
-              {startLabel && <span>Start: <span className="text-stone-500 dark:text-stone-400">{startLabel}</span></span>}
-              {endLabel && (
-                <span>
-                  Est. end:{' '}
-                  <span className="text-stone-500 dark:text-stone-400">
-                    {step.isVariable ? `~${endLabel}` : endLabel}
-                  </span>
-                </span>
-              )}
-            </div>
-          )}
-
           {!isCompleted && step.body && (
             <div className="prose prose-sm prose-stone dark:prose-invert max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{step.body}</ReactMarkdown>
@@ -114,6 +100,22 @@ export default function StepItem({ step, index, stepSchedule, isCompleted, onTog
               isVariable={step.isVariable && step.durationMax > 120}
               onIntendedChange={mins => onDurationChange(mins)}
             />
+          )}
+
+          {(startLabel || endLabel) && (
+            <div className="text-sm text-stone-400 dark:text-stone-500 mt-2 flex justify-between">
+              {startLabel
+                ? <span>Start: <span className="text-stone-500 dark:text-stone-400">{startLabel}</span></span>
+                : <span />}
+              {endLabel && (
+                <span>
+                  Est. end:{' '}
+                  <span className="text-stone-500 dark:text-stone-400">
+                    {step.isVariable ? `~${endLabel}` : endLabel}
+                  </span>
+                </span>
+              )}
+            </div>
           )}
         </div>
       </div>

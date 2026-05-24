@@ -151,16 +151,7 @@ export default function RecipePage() {
       </Link>
 
       <header className="mb-8">
-        <div className="flex flex-wrap gap-2 mb-3">
-          {recipe.tags.map(tag => (
-            <span
-              key={tag}
-              className="text-xs px-2.5 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+
         <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 mb-3">{recipe.title}</h1>
         {recipe.intro && (
           <div className="prose prose-stone dark:prose-invert text-stone-600 dark:text-stone-400 max-w-none">

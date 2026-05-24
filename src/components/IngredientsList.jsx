@@ -1,12 +1,19 @@
 export default function IngredientsList({ ingredients, loaves }) {
   let ingIdx = 0
 
+  const totalWeight = Math.round(ingredients.filter(i => !i.group).reduce((sum, i) => sum + i.weight, 0))
+  const perLoafWeight = Math.round(totalWeight / loaves)
+  const fmt = n => n.toLocaleString()
+  const weightLabel = loaves > 1
+    ? `${loaves} × ${fmt(perLoafWeight)}g = ${fmt(totalWeight)}g`
+    : `${fmt(totalWeight)}g`
+
   return (
     <section className="mb-8">
       <h2 className="text-xl font-semibold text-stone-800 dark:text-stone-200 mb-3">
         Ingredients
         <span className="text-sm font-normal text-stone-400 dark:text-stone-500 ml-2">
-          (×{loaves})
+          ({weightLabel})
         </span>
       </h2>
       <div className="border border-stone-200 dark:border-stone-700 rounded-xl overflow-hidden">
