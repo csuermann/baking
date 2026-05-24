@@ -81,17 +81,19 @@ export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
     }
   }
 
-  const activeHour   = activeTime ? activeTime.split(':')[0] : ''
-  const activeMinute = activeTime ? activeTime.split(':')[1] : ''
+  // Default to current time (minute floored to nearest 15) when no anchor is set
+  const nowHour   = String(new Date().getHours()).padStart(2, '0')
+  const nowMinute = String(Math.floor(new Date().getMinutes() / 15) * 15).padStart(2, '0')
+  const activeHour   = activeTime ? activeTime.split(':')[0] : nowHour
+  const activeMinute = activeTime ? activeTime.split(':')[1] : nowMinute
 
   const handleDayToggle = offset => {
     setPendingDay(offset)
-    if (activeTime) commit(activeMode, offset, activeTime)
+    commit(activeMode, offset, `${activeHour}:${activeMinute}`)
   }
 
   const handleHourChange = hour => {
-    const minute = activeMinute || '00'
-    commit(activeMode, activeDayOffset ?? pendingDay, hour ? `${hour}:${minute}` : '')
+    commit(activeMode, activeDayOffset ?? pendingDay, hour ? `${hour}:${activeMinute}` : '')
   }
 
   const handleMinuteChange = minute => {
