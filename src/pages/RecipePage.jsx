@@ -160,11 +160,14 @@ export default function RecipePage() {
         )}
       </header>
 
-      <LoafSelector
-        value={progress.loaves}
-        onChange={loaves => setProgress(p => ({ ...p, loaves }))}
-        onReset={resetProgress}
-      />
+      <div className="mb-6 flex justify-end">
+        <button
+          onClick={resetProgress}
+          className="text-sm text-stone-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+        >
+          Reset
+        </button>
+      </div>
 
       <SchedulePlanner
         steps={recipe.steps}
@@ -179,6 +182,14 @@ export default function RecipePage() {
         prefs={prefs}
         onPrefsChange={updates => setPrefs(p => ({ ...p, ...updates }))}
       />
+
+      <div className="mb-2 flex items-center gap-3">
+        <span className="text-sm text-stone-600 dark:text-stone-400">Quantity</span>
+        <LoafSelector
+          value={progress.loaves}
+          onChange={loaves => setProgress(p => ({ ...p, loaves }))}
+        />
+      </div>
 
       <IngredientsList ingredients={scaledIngredients} loaves={progress.loaves} />
 
