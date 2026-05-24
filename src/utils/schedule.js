@@ -4,10 +4,11 @@ export function getDefaultDuration(step) {
   return (step.durationMin + step.durationMax) / 2
 }
 
-export function computeSchedule(steps, anchor, stepCompletionTimes = {}) {
+export function computeSchedule(steps, anchor, stepCompletionTimes = {}, stepDurationOverrides = {}) {
   if (!anchor || !steps.length) return steps.map(() => null)
 
-  const totalMinutes = steps.reduce((sum, s) => sum + getDefaultDuration(s), 0)
+  const totalMinutes = steps.reduce((sum, s, i) =>
+    sum + (stepDurationOverrides[i] != null ? stepDurationOverrides[i] : getDefaultDuration(s)), 0)
 
   let scheduleStart
   if (anchor.type === 'finish') {
@@ -26,7 +27,8 @@ export function computeSchedule(steps, anchor, stepCompletionTimes = {}) {
     if (stepCompletionTimes[i] != null) {
       endTime = new Date(stepCompletionTimes[i])
     } else {
-      endTime = addMinutes(startTime, getDefaultDuration(steps[i]))
+      const dur = stepDurationOverrides[i] != null ? stepDurationOverrides[i] : getDefaultDuration(steps[i])
+      endTime = addMinutes(startTime, dur)
     }
 
     schedule.push({ startTime, endTime })

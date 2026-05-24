@@ -2,26 +2,30 @@ import { format } from 'date-fns'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import CountdownTimer from './CountdownTimer'
+import { getDefaultDuration } from '../utils/schedule'
 
 function fmtTime(date) {
   return date ? format(date, 'EEEE, HH:mm') : null
 }
 
-function fmtDuration(step) {
-  if (step.durationMin === 0) return null
-  const fmt = min => {
-    const h = Math.floor(min / 60)
-    const m = min % 60
-    if (h > 0 && m > 0) return `${h}h ${m}m`
-    return h > 0 ? `${h}h` : `${m}m`
-  }
-  return step.isVariable ? `${fmt(step.durationMin)}–${fmt(step.durationMax)}` : fmt(step.durationMin)
+function fmtMins(min) {
+  const h = Math.floor(min / 60)
+  const m = min % 60
+  if (h > 0 && m > 0) return `${h}h ${m}m`
+  return h > 0 ? `${h}h` : `${m}m`
 }
 
-export default function StepItem({ step, index, stepSchedule, isCompleted, onToggle, slug, onTimerStart, onTimerReset }) {
+function fmtDuration(step) {
+  if (step.durationMin === 0) return null
+  return step.isVariable ? `${fmtMins(step.durationMin)}–${fmtMins(step.durationMax)}` : fmtMins(step.durationMin)
+}
+
+export default function StepItem({ step, index, stepSchedule, isCompleted, onToggle, slug, onTimerStart, onTimerReset, durationOverride, onDurationChange }) {
   const timerKey = `timer-${slug}-${index}`
-  const defaultDurationMs = ((step.durationMin + step.durationMax) / 2) * 60 * 1000
+  const effectiveMins = durationOverride ?? getDefaultDuration(step)
+  const effectiveDurationMs = effectiveMins * 60 * 1000
   const hasTimer = step.durationMin > 0
+  const showSlider = step.isVariable && step.durationMax > 120
 
   const startLabel = stepSchedule ? fmtTime(stepSchedule.startTime) : null
   const endLabel = stepSchedule ? fmtTime(stepSchedule.endTime) : null
@@ -84,10 +88,29 @@ export default function StepItem({ step, index, stepSchedule, isCompleted, onTog
             </div>
           )}
 
+          {!isCompleted && showSlider && (
+            <div className="mt-3">
+              <div className="flex items-center justify-between text-xs text-stone-400 dark:text-stone-500 mb-1">
+                <span>{fmtMins(step.durationMin)}</span>
+                <span className="font-medium text-stone-600 dark:text-stone-300">{fmtMins(effectiveMins)}</span>
+                <span>{fmtMins(step.durationMax)}</span>
+              </div>
+              <input
+                type="range"
+                min={step.durationMin}
+                max={step.durationMax}
+                step={15}
+                value={effectiveMins}
+                onChange={e => onDurationChange(Number(e.target.value))}
+                className="w-full accent-amber-500"
+              />
+            </div>
+          )}
+
           {!isCompleted && hasTimer && (
             <CountdownTimer
               timerKey={timerKey}
-              durationMs={defaultDurationMs}
+              durationMs={effectiveDurationMs}
               onTimerStart={projectedEnd => onTimerStart?.(index, projectedEnd)}
               onTimerReset={() => onTimerReset?.(index)}
             />

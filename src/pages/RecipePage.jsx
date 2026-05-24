@@ -18,6 +18,7 @@ const PROGRESS_DEFAULTS = {
   scheduleAnchor: null,
   completedSteps: [],
   stepCompletionTimes: {},
+  stepDurationOverrides: {},
   kneadDurationOverride: null,
   hasRated: false,
 }
@@ -41,9 +42,13 @@ export default function RecipePage() {
   )
 
   const schedule = useMemo(
-    () => recipe ? computeSchedule(recipe.steps, progress.scheduleAnchor, progress.stepCompletionTimes) : [],
-    [recipe, progress.scheduleAnchor, progress.stepCompletionTimes]
+    () => recipe ? computeSchedule(recipe.steps, progress.scheduleAnchor, progress.stepCompletionTimes, progress.stepDurationOverrides) : [],
+    [recipe, progress.scheduleAnchor, progress.stepCompletionTimes, progress.stepDurationOverrides]
   )
+
+  const handleStepDurationChange = useCallback((index, mins) => {
+    setProgress(prev => ({ ...prev, stepDurationOverrides: { ...prev.stepDurationOverrides, [index]: mins } }))
+  }, [])
 
   const handleTimerStart = useCallback((index, projectedEndMs) => {
     setProgress(prev => {
@@ -168,6 +173,8 @@ export default function RecipePage() {
         slug={slug}
         onTimerStart={handleTimerStart}
         onTimerReset={handleTimerReset}
+        stepDurationOverrides={progress.stepDurationOverrides}
+        onStepDurationChange={handleStepDurationChange}
       />
 
       <BakingHistory history={history} recipe={recipe} onDelete={handleDeleteHistory} />
