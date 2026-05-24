@@ -21,7 +21,7 @@ function formatElapsed(ms) {
 function fmtMins(min) {
   const h = Math.floor(min / 60)
   const m = min % 60
-  if (h > 0 && m > 0) return `${h}h ${m}m`
+  if (h > 0 && m > 0) return `${h}:${String(m).padStart(2, '0')}h`
   return h > 0 ? `${h}h` : `${m}m`
 }
 
