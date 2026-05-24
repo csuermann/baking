@@ -31,7 +31,7 @@ export default function useTimer(key, durationMs) {
       const expiredAt = stored.startedAt + stored.remainingAtPause
       if (Date.now() - expiredAt < 5 * 60 * 1000) {
         notifiedRef.current = true
-        if (Notification.permission === 'granted') {
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
           new Notification('Timer done!', { body: 'Your baking step is complete.' })
         }
       }
@@ -40,8 +40,8 @@ export default function useTimer(key, durationMs) {
   }, [isDone, stored])
 
   const start = useCallback(async () => {
-    if (Notification.permission === 'default') {
-      await Notification.requestPermission()
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+      try { await Notification.requestPermission() } catch {}
     }
     const remaining = stored ? getRemainingMs() : durationMs
     setStored({ startedAt: Date.now(), paused: false, remainingAtPause: remaining })
