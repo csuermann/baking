@@ -1,3 +1,5 @@
 node_modules
 dist
-.claude
+.claude/*
+!.claude/commands/
+!.claude/commands/**
