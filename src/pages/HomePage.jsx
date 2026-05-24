@@ -75,25 +75,20 @@ export default function HomePage() {
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">Recipes</h1>
           {langs.length > 1 && (
-            <div className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5 text-stone-500 mr-0.5 flex-shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <div className="flex items-center gap-1.5">
+              <svg className="w-2.5 h-2.5 text-stone-500 flex-shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h11A1.5 1.5 0 0 1 15 2.5v1.293a1 1 0 0 1-.293.707L10 9.207V14a1 1 0 0 1-1.447.894l-2-1A1 1 0 0 1 6 13v-3.793L1.293 4.5A1 1 0 0 1 1 3.793V2.5z"/>
               </svg>
-              {langs.map(l => (
-                <button
-                  key={l}
-                  onClick={() => setLang(l)}
-                  className={`text-lg px-1.5 py-0.5 rounded-md transition-colors ${
-                    lang === l
-                      ? 'bg-amber-500/15 ring-1 ring-amber-500/40'
-                      : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
-                  }`}
-                  aria-label={`Show ${l === 'de' ? 'German' : 'English'} recipes`}
-                  aria-pressed={lang === l}
-                >
-                  {LANG_FLAGS[l] ?? l.toUpperCase()}
-                </button>
-              ))}
+              <select
+                value={lang}
+                onChange={e => setLang(e.target.value)}
+                className="text-lg bg-transparent border-none outline-none cursor-pointer"
+                aria-label="Filter by language"
+              >
+                {langs.map(l => (
+                  <option key={l} value={l}>{LANG_FLAGS[l] ?? l.toUpperCase()}</option>
+                ))}
+              </select>
             </div>
           )}
         </div>
