@@ -45,6 +45,45 @@ export default function RecipePage() {
     [recipe, progress.scheduleAnchor, progress.stepCompletionTimes]
   )
 
+  const handleTimerStart = useCallback((index, projectedEndMs) => {
+    setProgress(prev => {
+      if (prev.completedSteps.includes(index)) return prev
+      return { ...prev, stepCompletionTimes: { ...prev.stepCompletionTimes, [index]: projectedEndMs } }
+    })
+  }, [])
+
+  const handleDeleteHistory = useCallback(id => {
+    setHistory(prev => prev.filter(entry => entry.id !== id))
+  }, [setHistory])
+
+  const handleRate = useCallback(rating => {
+    const record = {
+      id: Date.now(),
+      timestamp: Date.now(),
+      rating,
+      loaves: progress.loaves,
+      roomTemp: prefs.roomTemp,
+      flourTemp: prefs.flourTemp,
+      risePerMin: prefs.risePerMin,
+      kneadDurationMin: progress.kneadDurationOverride ?? recipe?.kneadDurationMin,
+      targetDoughTemp: recipe?.targetDoughTemp,
+      scheduleAnchor: progress.scheduleAnchor,
+      completedSteps: progress.completedSteps,
+      stepCompletionTimes: progress.stepCompletionTimes,
+    }
+    setHistory(prev => [record, ...prev])
+    setProgress(prev => ({ ...prev, hasRated: true }))
+  }, [progress, prefs, recipe, setHistory])
+
+  const handleTimerReset = useCallback(index => {
+    setProgress(prev => {
+      if (prev.completedSteps.includes(index)) return prev
+      const times = { ...prev.stepCompletionTimes }
+      delete times[index]
+      return { ...prev, stepCompletionTimes: times }
+    })
+  }, [])
+
   if (!recipe) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -74,45 +113,6 @@ export default function RecipePage() {
   }
 
   const resetProgress = () => setProgress(defaultProgress)
-
-  const handleTimerStart = useCallback((index, projectedEndMs) => {
-    setProgress(prev => {
-      if (prev.completedSteps.includes(index)) return prev
-      return { ...prev, stepCompletionTimes: { ...prev.stepCompletionTimes, [index]: projectedEndMs } }
-    })
-  }, [])
-
-  const handleDeleteHistory = useCallback(id => {
-    setHistory(prev => prev.filter(entry => entry.id !== id))
-  }, [setHistory])
-
-  const handleRate = useCallback(rating => {
-    const record = {
-      id: Date.now(),
-      timestamp: Date.now(),
-      rating,
-      loaves: progress.loaves,
-      roomTemp: prefs.roomTemp,
-      flourTemp: prefs.flourTemp,
-      risePerMin: prefs.risePerMin,
-      kneadDurationMin: progress.kneadDurationOverride ?? recipe.kneadDurationMin,
-      targetDoughTemp: recipe.targetDoughTemp,
-      scheduleAnchor: progress.scheduleAnchor,
-      completedSteps: progress.completedSteps,
-      stepCompletionTimes: progress.stepCompletionTimes,
-    }
-    setHistory(prev => [record, ...prev])
-    setProgress(prev => ({ ...prev, hasRated: true }))
-  }, [progress, prefs, recipe, setHistory])
-
-  const handleTimerReset = useCallback(index => {
-    setProgress(prev => {
-      if (prev.completedSteps.includes(index)) return prev
-      const times = { ...prev.stepCompletionTimes }
-      delete times[index]
-      return { ...prev, stepCompletionTimes: times }
-    })
-  }, [])
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
