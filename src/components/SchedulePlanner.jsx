@@ -5,6 +5,13 @@ import { getDefaultDuration } from '../utils/schedule'
 const MAX_OFFSET_MINS = 72 * 60  // 72 hours ahead
 const STEP_MINS = 15
 
+// Floor current time to the nearest 15-min boundary so slider steps hit clean quarter-hours
+function quarterFloor(date) {
+  const d = new Date(date)
+  d.setMinutes(Math.floor(d.getMinutes() / 15) * 15, 0, 0)
+  return d
+}
+
 export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
   const [open, setOpen] = useState(false)
 
@@ -16,15 +23,16 @@ export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
   const m = Math.round(totalMinutes % 60)
   const durationLabel = m > 0 ? `${h}h ${m}m` : `${h}h`
 
-  // Slider value = minutes from now to start. Clamped to [0, MAX].
+  // Slider value = minutes from the floored-now to start. Clamped to [0, MAX].
+  const base = quarterFloor(new Date())
   const sliderValue = useMemo(() => {
     if (!anchor) return 0
-    const diff = Math.round((new Date(anchor.datetime) - Date.now()) / 60000)
+    const diff = Math.round((new Date(anchor.datetime) - base) / 60000)
     return Math.max(0, Math.min(MAX_OFFSET_MINS, Math.round(diff / STEP_MINS) * STEP_MINS))
   }, [anchor])
 
-  // Display times: use anchor if set, otherwise project from now
-  const startDate = anchor ? new Date(anchor.datetime) : addMinutes(new Date(), sliderValue)
+  // Display times: use anchor if set, otherwise project from base
+  const startDate = anchor ? new Date(anchor.datetime) : addMinutes(base, sliderValue)
   const endDate   = addMinutes(startDate, totalMinutes)
   const startLabel = (anchor && sliderValue > 0) ? format(startDate, 'EEE HH:mm') : 'Now'
   const endLabel   = format(endDate, 'EEE HH:mm')
@@ -35,7 +43,7 @@ export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
 
   const handleChange = e => {
     const mins = Number(e.target.value)
-    onAnchorChange({ type: 'start', datetime: format(addMinutes(new Date(), mins), "yyyy-MM-dd'T'HH:mm") })
+    onAnchorChange({ type: 'start', datetime: format(addMinutes(quarterFloor(new Date()), mins), "yyyy-MM-dd'T'HH:mm") })
   }
 
   return (
