@@ -1,4 +1,8 @@
-Import a recipe into this sourdough baking app. The input may be a URL, a path to an image file, or pasted recipe text.
+---
+description: Import a recipe from markdown, URL, image, or text into this baking app
+---
+
+Import a recipe into this baking app. The input may be a URL, a path to an image file, or pasted recipe text.
 
 **Input:** $ARGUMENTS
 

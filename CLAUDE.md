@@ -1,6 +1,6 @@
 # Baking SPA
 
-React 19 + Vite 6 + Tailwind CSS v4 sourdough baking assistant. Hosted on GitHub Pages via `gh-pages` branch.
+React 19 + Vite 6 + Tailwind CSS v4 baking assistant. Hosted on GitHub Pages via `gh-pages` branch.
 
 ## Commands
 

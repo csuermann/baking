@@ -10,7 +10,7 @@ export default function App() {
         <header className="border-b border-stone-200 dark:border-stone-800 sticky top-0 bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-sm z-10">
           <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
             <Link to="/" className="text-stone-800 dark:text-stone-200 font-semibold text-lg tracking-tight">
-              Sourdough Baker
+              Baking Assistant
             </Link>
             <DarkModeToggle />
           </div>
