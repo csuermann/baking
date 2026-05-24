@@ -67,18 +67,6 @@ function RecipeRow({ recipe }) {
         <div className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
           {recipe.description}
         </div>
-        {activeStep && (() => {
-          const remainingMs = activeStep.endMs - now
-          const overdue = remainingMs <= 0
-          return (
-            <div className={`flex items-center gap-1.5 mt-1.5 text-xs font-medium ${overdue ? 'text-red-500' : 'text-amber-500'}`}>
-              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse flex-shrink-0" />
-              <span>{activeStep.title}</span>
-              <span>·</span>
-              <span>{overdue ? `${fmtDiff(remainingMs)} overdue` : `${fmtDiff(remainingMs)} left`}</span>
-            </div>
-          )
-        })()}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1.5 text-xs text-stone-400 dark:text-stone-500">
           <span>{recipe.steps.length} steps</span>
           <span>{fmtDuration(recipe.steps)}</span>
@@ -94,6 +82,18 @@ function RecipeRow({ recipe }) {
             </>
           )}
         </div>
+        {activeStep && (() => {
+          const remainingMs = activeStep.endMs - now
+          const overdue = remainingMs <= 0
+          return (
+            <div className={`flex items-center gap-1.5 mt-1.5 text-xs font-medium ${overdue ? 'text-red-500' : 'text-amber-500'}`}>
+              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse flex-shrink-0" />
+              <span>{activeStep.title}</span>
+              <span>·</span>
+              <span>{overdue ? `${fmtDiff(remainingMs)} overdue` : `${fmtDiff(remainingMs)} left`}</span>
+            </div>
+          )
+        })()}
       </div>
       <svg
         className="flex-shrink-0 w-4 h-4 text-stone-300 dark:text-stone-600 group-hover:text-amber-400 dark:group-hover:text-amber-500 transition-colors"
