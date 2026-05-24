@@ -75,7 +75,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">Recipes</h1>
           {langs.length > 1 && (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 border border-stone-700 rounded-md px-2 py-1">
               <svg className="w-2.5 h-2.5 text-stone-500 flex-shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h11A1.5 1.5 0 0 1 15 2.5v1.293a1 1 0 0 1-.293.707L10 9.207V14a1 1 0 0 1-1.447.894l-2-1A1 1 0 0 1 6 13v-3.793L1.293 4.5A1 1 0 0 1 1 3.793V2.5z"/>
               </svg>
