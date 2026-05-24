@@ -70,34 +70,23 @@ export default function CountdownTimer({ elapsedMs, intendedMs, durationMin, dur
 
   return (
     <div className="mt-3">
-      {/* Labels (variable steps only) — absolutely positioned over their track location */}
+      {/* Min / max labels above the track (variable steps only) */}
       {isVariable && (
         <div className="relative h-4 mb-1">
-          {/* Min label: stable anchor at the start of the valid zone */}
           <span
             className="absolute text-xs text-stone-400 dark:text-stone-500 -translate-x-1/2"
             style={{ left: `${minPct}%` }}
           >
             {fmtMins(durationMin)}
           </span>
-          {/* Current target label: hidden only when close enough to overlap an anchor */}
-          {Math.abs(thumbPct - minPct) > 8 && Math.abs(thumbPct - 100) > 8 && (
-            <span
-              className="absolute text-xs font-medium text-stone-600 dark:text-stone-300 -translate-x-1/2"
-              style={{ left: `${thumbPct}%` }}
-            >
-              {fmtMins(thumbMins)}
-            </span>
-          )}
-          {/* Max label: stable anchor at the right edge */}
           <span className="absolute right-0 text-xs text-stone-400 dark:text-stone-500">
             {fmtMins(durationMax)}
           </span>
         </div>
       )}
 
-      {/* Visual progress track */}
-      <div className="relative h-4 flex items-center">
+      {/* Visual progress track — also anchors the below-thumb label via overflow */}
+      <div className={`relative h-4 flex items-center${isVariable ? ' mb-5' : ''}`}>
         {/* Track background */}
         <div className="absolute inset-x-0 h-2 rounded-full bg-stone-200 dark:bg-stone-700" />
 
@@ -147,6 +136,16 @@ export default function CountdownTimer({ elapsedMs, intendedMs, durationMin, dur
             className="absolute h-full opacity-0 cursor-pointer"
             style={{ left: `${minPct}%`, width: `${100 - minPct}%` }}
           />
+        )}
+
+        {/* Current thumb value — rendered inside track container so it shares the same overflow context as the thumb */}
+        {isVariable && (
+          <span
+            className="absolute text-xs font-medium text-stone-600 dark:text-stone-300 whitespace-nowrap pointer-events-none"
+            style={{ left: `${thumbPct}%`, transform: 'translateX(-50%)', top: 'calc(100% + 4px)' }}
+          >
+            {fmtMins(thumbMins)}
+          </span>
         )}
       </div>
 
