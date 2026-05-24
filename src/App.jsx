@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route, Link, useMatch } from 'react-router-dom'
 import { SignedIn, SignedOut, SignIn, UserButton } from '@clerk/clerk-react'
+import { useSync } from './hooks/useSync'
 import HomePage from './pages/HomePage'
 import RecipePage from './pages/RecipePage'
 
@@ -53,6 +54,7 @@ function AppHeader() {
 }
 
 function AppShell() {
+  useSync()
   return (
     <HashRouter>
       <div className="min-h-screen bg-stone-950">

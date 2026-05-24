@@ -6,6 +6,7 @@ import { getRecipeBySlug } from '../utils/parseRecipes'
 import { scaleIngredients } from '../utils/scaling'
 import { computeSchedule } from '../utils/schedule'
 import useLocalStorage from '../hooks/useLocalStorage'
+import { scheduleSync } from '../hooks/useSync'
 import LoafSelector from '../components/LoafSelector'
 import WaterTempCalc from '../components/WaterTempCalc'
 import SchedulePlanner from '../components/SchedulePlanner'
@@ -29,13 +30,18 @@ export default function RecipePage() {
   const recipe = getRecipeBySlug(slug)
 
   const defaultProgress = { loaves: recipe?.defaultQuantity ?? 1, ...PROGRESS_DEFAULTS }
-  const [progress, setProgress] = useLocalStorage(`baking-progress-${slug}`, defaultProgress)
-  const [history, setHistory] = useLocalStorage(`baking-history-${slug}`, [])
-  const [prefs, setPrefs] = useLocalStorage('baking-prefs', {
+  const [progress, _setProgress] = useLocalStorage(`baking-progress-${slug}`, defaultProgress)
+  const [history, _setHistory] = useLocalStorage(`baking-history-${slug}`, [])
+  const [prefs, _setPrefs] = useLocalStorage('baking-prefs', {
     roomTemp: 22,
     flourTemp: 20,
     risePerMin: 0.5,
   })
+
+  // Wrap setters to auto-schedule a cloud sync after every mutation
+  const setProgress = useCallback(v => { _setProgress(v); scheduleSync() }, [_setProgress])
+  const setHistory  = useCallback(v => { _setHistory(v);  scheduleSync() }, [_setHistory])
+  const setPrefs    = useCallback(v => { _setPrefs(v);    scheduleSync() }, [_setPrefs])
 
   const scaledIngredients = useMemo(
     () => recipe ? scaleIngredients(recipe.ingredients, recipe.flourBaseG, progress.loaves) : [],
