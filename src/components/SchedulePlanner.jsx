@@ -12,10 +12,10 @@ function quarterFloor(date) {
   return d
 }
 
-export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
+export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anchor, onAnchorChange }) {
   const totalMinutes = useMemo(
-    () => steps.reduce((sum, s) => sum + getDefaultDuration(s), 0),
-    [steps]
+    () => steps.reduce((sum, s, i) => sum + (stepDurationOverrides[i] ?? getDefaultDuration(s)), 0),
+    [steps, stepDurationOverrides]
   )
   const h = Math.floor(totalMinutes / 60)
   const m = Math.round(totalMinutes % 60)

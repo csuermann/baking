@@ -167,6 +167,7 @@ export default function RecipePage() {
 
       <SchedulePlanner
         steps={recipe.steps}
+        stepDurationOverrides={progress.stepDurationOverrides}
         anchor={progress.scheduleAnchor}
         onAnchorChange={anchor => setProgress(p => ({ ...p, scheduleAnchor: anchor }))}
       />
