@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
 import { recipes } from '../utils/parseRecipes'
@@ -10,6 +10,29 @@ function getHistory(slug) {
   } catch {
     return []
   }
+}
+
+function getActiveStep(slug, steps) {
+  try {
+    const p = JSON.parse(localStorage.getItem(`baking-progress-${slug}`) || 'null')
+    if (!p) return null
+    for (let i = 0; i < steps.length; i++) {
+      if (p.stepActivatedAt?.[i] != null && !p.completedSteps?.includes(i)) {
+        const intendedMins = p.stepDurationOverrides?.[i] ?? steps[i].durationMin
+        const endMs = p.stepActivatedAt[i] + intendedMins * 60_000
+        return { index: i, title: steps[i].title, endMs }
+      }
+    }
+  } catch {}
+  return null
+}
+
+function fmtDiff(ms) {
+  const totalMin = Math.ceil(Math.abs(ms) / 60_000)
+  const h = Math.floor(totalMin / 60)
+  const m = totalMin % 60
+  if (h > 0 && m > 0) return `${h}h ${m}m`
+  return h > 0 ? `${h}h` : `${m}m`
 }
 
 function fmtDuration(steps) {
@@ -24,6 +47,14 @@ function RecipeRow({ recipe }) {
   const lastEntry = history[0] // newest first
   const bakeCount = history.length
 
+  const activeStep = useMemo(() => getActiveStep(recipe.slug, recipe.steps), [recipe.slug, recipe.steps])
+  const [now, setNow] = useState(Date.now())
+  useEffect(() => {
+    if (!activeStep) return
+    const id = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [!!activeStep]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <Link
       to={`/recipe/${recipe.slug}`}
@@ -36,6 +67,18 @@ function RecipeRow({ recipe }) {
         <div className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
           {recipe.description}
         </div>
+        {activeStep && (() => {
+          const remainingMs = activeStep.endMs - now
+          const overdue = remainingMs <= 0
+          return (
+            <div className={`flex items-center gap-1.5 mt-1.5 text-xs font-medium ${overdue ? 'text-red-500' : 'text-amber-500'}`}>
+              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse flex-shrink-0" />
+              <span>{activeStep.title}</span>
+              <span>·</span>
+              <span>{overdue ? `${fmtDiff(remainingMs)} overdue` : `${fmtDiff(remainingMs)} left`}</span>
+            </div>
+          )
+        })()}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1.5 text-xs text-stone-400 dark:text-stone-500">
           <span>{recipe.steps.length} steps</span>
           <span>{fmtDuration(recipe.steps)}</span>
