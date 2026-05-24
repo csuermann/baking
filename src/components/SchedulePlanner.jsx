@@ -81,13 +81,21 @@ export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
     }
   }
 
+  const activeHour   = activeTime ? activeTime.split(':')[0] : ''
+  const activeMinute = activeTime ? activeTime.split(':')[1] : ''
+
   const handleDayToggle = offset => {
     setPendingDay(offset)
     if (activeTime) commit(activeMode, offset, activeTime)
   }
 
-  const handleTimeChange = e => {
-    commit(activeMode, activeDayOffset ?? pendingDay, e.target.value)
+  const handleHourChange = hour => {
+    const minute = activeMinute || '00'
+    commit(activeMode, activeDayOffset ?? pendingDay, hour ? `${hour}:${minute}` : '')
+  }
+
+  const handleMinuteChange = minute => {
+    if (activeHour) commit(activeMode, activeDayOffset ?? pendingDay, `${activeHour}:${minute}`)
   }
 
   // --- styles ---
@@ -132,13 +140,31 @@ export default function SchedulePlanner({ steps, anchor, onAnchorChange }) {
             ))}
           </div>
 
-          {/* Time input */}
-          <input
-            type="time"
-            className="w-full text-base border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-2 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
-            value={activeTime}
-            onChange={handleTimeChange}
-          />
+          {/* Time selects — two <select> elements never overflow on iOS */}
+          <div className="flex items-center gap-2">
+            <select
+              value={activeHour}
+              onChange={e => handleHourChange(e.target.value)}
+              className="flex-1 text-base border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-2 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            >
+              <option value="">HH</option>
+              {Array.from({ length: 24 }, (_, i) => {
+                const v = String(i).padStart(2, '0')
+                return <option key={v} value={v}>{v}</option>
+              })}
+            </select>
+            <span className="text-stone-400 dark:text-stone-500 font-semibold select-none">:</span>
+            <select
+              value={activeMinute}
+              onChange={e => handleMinuteChange(e.target.value)}
+              className="flex-1 text-base border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-2 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            >
+              <option value="">MM</option>
+              {['00', '15', '30', '45'].map(v => (
+                <option key={v} value={v}>{v}</option>
+              ))}
+            </select>
+          </div>
 
           {/* Summary / clear */}
           {anchor && startDatetime && finishDatetime ? (
