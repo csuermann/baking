@@ -82,7 +82,7 @@ export default function HomePage() {
               <select
                 value={lang}
                 onChange={e => setLang(e.target.value)}
-                className="text-lg bg-transparent border-none outline-none cursor-pointer"
+                className="text-lg bg-transparent border-none outline-none cursor-pointer appearance-none"
                 aria-label="Filter by language"
               >
                 {langs.map(l => (
