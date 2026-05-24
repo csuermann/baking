@@ -2,7 +2,7 @@
 title: Schwedische Kanelbullar
 description: Klassische schwedische Zimtschnecken mit weichem Hefeteig und aromatischer Zimt-Butter-Füllung. Werden kunstvoll verdreht und gerollt – außen glänzend, innen zart und duftend.
 target_dough_temp: 25
-flour_base_g: 450
+flour_base_g: 37
 knead_duration_min: 10
 default_quantity: 12
 
