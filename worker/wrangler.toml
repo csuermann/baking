@@ -1,14 +1,16 @@
 name = "baking-sync"
 main = "src/index.js"
 compatibility_date = "2024-11-01"
+workers_dev = true
+preview_urls = false
 
 [[kv_namespaces]]
 binding = "KV"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
-preview_id = "REPLACE_WITH_KV_PREVIEW_ID"
+id = "b2c9d38559464d0ca5ba5d158c61c23f"
+preview_id = "63f7c610dc3746aa97fb815c131c98b6"
 
 [vars]
-CLERK_PUBLISHABLE_KEY = "pk_live_REPLACE_ME"
+CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuYmFraW5nLmNzdWVybWFubi5kZSQ"
 
 # Allowed origins for CORS
 ALLOWED_ORIGINS = "https://baking.csuermann.de,http://localhost:5173,http://localhost:4173"
