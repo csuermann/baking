@@ -47,7 +47,14 @@ export default function RecipePage() {
   )
 
   const handleStepDurationChange = useCallback((index, mins) => {
-    setProgress(prev => ({ ...prev, stepDurationOverrides: { ...prev.stepDurationOverrides, [index]: mins } }))
+    setProgress(prev => {
+      const stepDurationOverrides = { ...prev.stepDurationOverrides, [index]: mins }
+      const stepCompletionTimes = { ...prev.stepCompletionTimes }
+      if (!prev.completedSteps.includes(index)) {
+        delete stepCompletionTimes[index]
+      }
+      return { ...prev, stepDurationOverrides, stepCompletionTimes }
+    })
   }, [])
 
   const handleTimerStart = useCallback((index, projectedEndMs) => {

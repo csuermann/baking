@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import useTimer from '../hooks/useTimer'
 
 function formatTime(ms) {
@@ -11,6 +12,15 @@ function formatTime(ms) {
 
 export default function CountdownTimer({ timerKey, durationMs, onTimerStart, onTimerReset }) {
   const { remainingMs, isRunning, isDone, started, start, pause, reset } = useTimer(timerKey, durationMs)
+
+  const prevDurationRef = useRef(durationMs)
+  useEffect(() => {
+    if (durationMs === prevDurationRef.current) return
+    prevDurationRef.current = durationMs
+    if (started && !isDone) {
+      reset()
+    }
+  }, [durationMs, started, isDone, reset])
 
   const handleStart = () => {
     onTimerStart?.(Date.now() + remainingMs)
