@@ -13,7 +13,7 @@ function quarterFloor(date) {
   return d
 }
 
-export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anchor, onAnchorChange, schedule = [] }) {
+export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anchor, onAnchorChange, schedule = [], onStepDurationChange }) {
   const totalMinutes = useMemo(
     () => steps.reduce((sum, s, i) => sum + (stepDurationOverrides[i] ?? getDefaultDuration(s)), 0),
     [steps, stepDurationOverrides]
@@ -92,6 +92,7 @@ export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anc
         schedule={schedule}
         stepDurationOverrides={stepDurationOverrides}
         hasAnchor={anchor != null}
+        onStepDurationChange={onStepDurationChange}
       />
     </div>
   )

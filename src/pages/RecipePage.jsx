@@ -171,6 +171,7 @@ export default function RecipePage() {
         anchor={progress.scheduleAnchor}
         onAnchorChange={anchor => setProgress(p => ({ ...p, scheduleAnchor: anchor }))}
         schedule={schedule}
+        onStepDurationChange={handleStepDurationChange}
       />
 
       <WaterTempCalc

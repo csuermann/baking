@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { format, startOfDay, addDays } from 'date-fns'
 import { getDefaultDuration } from '../utils/schedule'
 
@@ -6,7 +7,6 @@ function getMidnightMarkers(start, end) {
   if (!start || !end) return markers
   const totalMs = end - start
   if (totalMs <= 0) return markers
-  // Walk from the first midnight after start to end
   const cursor = startOfDay(addDays(start, 1))
   while (cursor < end) {
     const offsetMs = cursor - start
@@ -24,7 +24,19 @@ function scrollToStep(index) {
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-export default function RecipeTimeline({ steps, schedule, stepDurationOverrides = {}, hasAnchor = false }) {
+function fmtMins(min) {
+  const h = Math.floor(min / 60)
+  const m = min % 60
+  if (h > 0 && m > 0) return `${h}h ${m}m`
+  return h > 0 ? `${h}h` : `${m}m`
+}
+
+export default function RecipeTimeline({ steps, schedule, stepDurationOverrides = {}, hasAnchor = false, onStepDurationChange }) {
+  const [selectedIndex, setSelectedIndex] = useState(null)
+
+  // Reset selection if steps change (e.g. recipe navigation)
+  useEffect(() => { setSelectedIndex(null) }, [steps])
+
   if (!steps.length || !schedule.length) return null
 
   const effectiveDurations = steps.map((s, i) =>
@@ -58,6 +70,8 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
             const pct = (effectiveDurations[i] / totalMinutes) * 100
             const isPassive = step.isPassive ?? false
             const isVariable = step.isVariable && !isPassive
+            const isAdjustable = isVariable && !!onStepDurationChange
+            const isSelected = selectedIndex === i
 
             let colorClass = isPassive ? 'bg-stone-600' : 'bg-amber-500'
             if (isVariable) colorClass = 'bg-amber-400'
@@ -66,13 +80,30 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
               ? `${step.title} · ${format(schedule[i].startTime, 'HH:mm')}–${format(schedule[i].endTime, 'HH:mm')}`
               : step.title
 
+            const handleClick = () => {
+              if (isAdjustable) {
+                setSelectedIndex(prev => prev === i ? null : i)
+              } else {
+                scrollToStep(i)
+              }
+            }
+
             return (
               <button
                 key={i}
                 title={tip}
                 aria-label={tip}
-                onClick={() => scrollToStep(i)}
-                className={`${colorClass} h-full hover:brightness-110 border-r border-stone-950/20 last:border-r-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-400 transition-[filter]`}
+                onClick={handleClick}
+                className={`
+                  ${colorClass}
+                  h-full
+                  hover:brightness-110
+                  border-r border-stone-950/20 last:border-r-0
+                  focus:outline-none
+                  transition-[filter,box-shadow]
+                  ${isAdjustable ? 'cursor-ew-resize' : ''}
+                  ${isSelected ? 'ring-2 ring-inset ring-amber-300' : ''}
+                `}
                 style={{ width: `${pct}%`, minWidth: pct < 1 ? '3px' : undefined }}
               />
             )
@@ -90,6 +121,41 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
           </div>
         ))}
       </div>
+
+      {/* Inline duration adjustment panel */}
+      {selectedIndex != null && onStepDurationChange && (() => {
+        const s = steps[selectedIndex]
+        const currentMins = stepDurationOverrides[selectedIndex] ?? getDefaultDuration(s)
+        return (
+          <div className="mt-2 px-3 py-2.5 bg-stone-800 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-stone-200 truncate">{s.title}</span>
+              <button
+                onClick={() => { scrollToStep(selectedIndex); setSelectedIndex(null) }}
+                className="ml-3 flex-shrink-0 text-xs text-stone-400 hover:text-amber-400 transition-colors"
+              >
+                Go to step ↗
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-stone-500 w-12 text-right flex-shrink-0">{fmtMins(s.durationMin)}</span>
+              <input
+                type="range"
+                min={s.durationMin}
+                max={s.durationMax}
+                step={15}
+                value={currentMins}
+                onChange={e => onStepDurationChange(selectedIndex, Number(e.target.value))}
+                className="flex-1 accent-amber-500"
+              />
+              <span className="text-xs text-stone-500 w-12 flex-shrink-0">{fmtMins(s.durationMax)}</span>
+            </div>
+            <div className="text-center text-sm font-semibold text-amber-400 mt-1">
+              {fmtMins(currentMins)}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Day labels below midnight markers */}
       {midnightMarkers.length > 0 && (
