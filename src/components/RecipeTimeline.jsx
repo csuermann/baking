@@ -107,7 +107,7 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
           {steps.map((step, i) => {
             const pct = (effectiveDurations[i] / totalMinutes) * 100
             const isPassive = step.isPassive ?? false
-            const isVariable = step.isVariable && !isPassive
+            const isVariable = !!step.isVariable
             const isAdjustable = isVariable && !!onStepDurationChange
             const isSelected = selectedIndex === i
 
@@ -208,8 +208,7 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
       {/* Inline panel — shown for any selected step */}
       {selectedIndex != null && (() => {
         const s = steps[selectedIndex]
-        const isPassive = s.isPassive ?? false
-        const isAdjustable = s.isVariable && !isPassive && !!onStepDurationChange
+        const isAdjustable = !!s.isVariable && !!onStepDurationChange
         const currentMins = stepDurationOverrides[selectedIndex] ?? getDefaultDuration(s)
         return (
           <div className="mt-2 px-3 py-2.5 bg-stone-800 rounded-lg">
