@@ -258,19 +258,6 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
         )
       })()}
 
-      {/* Legend */}
-      {hasPassive && (
-        <div className="flex items-center gap-4 mt-2 flex-wrap">
-          <span className="flex items-center gap-1.5 text-xs text-stone-500">
-            <span className="inline-block w-3 h-3 rounded-sm bg-amber-500" />
-            Active
-          </span>
-          <span className="flex items-center gap-1.5 text-xs text-stone-500">
-            <span className="inline-block w-3 h-3 rounded-sm bg-stone-600" />
-            Hands-off
-          </span>
-        </div>
-      )}
     </div>
   )
 }
