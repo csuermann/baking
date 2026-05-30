@@ -163,39 +163,45 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
       {/* Active-run time labels — vertical strip below the bar */}
       {hasAnchor && (
         <div className="relative h-8 mt-1.5">
-          {activeRuns.flatMap((run, ri) => {
-            const startTime = schedule[run.start]?.startTime
-            const endTime   = schedule[run.end]?.endTime
-            if (!startTime || !endTime) return []
-            const leftPct  = cumPct[run.start]
-            const rightPct = cumPct[run.end] + (effectiveDurations[run.end] / totalMinutes) * 100
-            return [
+          {(() => {
+            // Collect all boundary labels in left-to-right order
+            const allLabels = []
+            activeRuns.forEach((run, ri) => {
+              const startTime = schedule[run.start]?.startTime
+              const endTime   = schedule[run.end]?.endTime
+              if (!startTime || !endTime) return
+              const leftPct  = cumPct[run.start]
+              const rightPct = cumPct[run.end] + (effectiveDurations[run.end] / totalMinutes) * 100
+              allLabels.push({ key: `rs-${ri}`, pct: leftPct,  time: startTime })
+              allLabels.push({ key: `re-${ri}`, pct: rightPct, time: endTime })
+            })
+
+            // Drop any label within 25 min of the previous kept label
+            const kept = []
+            let lastMs = null
+            for (const label of allLabels) {
+              const ms = label.time.getTime()
+              if (lastMs === null || ms - lastMs >= 25 * 60 * 1000) {
+                kept.push(label)
+                lastMs = ms
+              }
+            }
+
+            return kept.map(({ key, pct, time }) => (
               <span
-                key={`rs-${ri}`}
+                key={key}
                 className="absolute text-[9px] leading-none text-stone-400 whitespace-nowrap"
                 style={{
-                  left: `${leftPct}%`,
+                  left: `${pct}%`,
                   top: 0,
                   writingMode: 'vertical-rl',
                   transform: 'translateX(-50%) rotate(180deg)',
                 }}
               >
-                {format(startTime, 'HH:mm')}
-              </span>,
-              <span
-                key={`re-${ri}`}
-                className="absolute text-[9px] leading-none text-stone-400 whitespace-nowrap"
-                style={{
-                  left: `${rightPct}%`,
-                  top: 0,
-                  writingMode: 'vertical-rl',
-                  transform: 'translateX(-50%) rotate(180deg)',
-                }}
-              >
-                {format(endTime, 'HH:mm')}
-              </span>,
-            ]
-          })}
+                {format(time, 'HH:mm')}
+              </span>
+            ))
+          })()}
         </div>
       )}
 
