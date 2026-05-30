@@ -112,7 +112,11 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
             const isAdjustable = isVariable && !!onStepDurationChange
             const isSelected = selectedIndex === i
 
-            let colorClass = isPassive ? 'bg-stone-600' : 'bg-amber-500'
+            // Use hex colours directly in inline style — Tailwind v4 uses oklch CSS
+            // variables which may not resolve correctly on older iOS/WebKit builds,
+            // causing all segments to appear amber.  Inline hex values bypass the
+            // CSS custom-property + oklch chain entirely and work on every browser.
+            const bgColor = isPassive ? '#57534e' : '#f59e0b'
 
             const tip = hasAnchor && schedule[i]
               ? `${step.title} · ${format(schedule[i].startTime, 'HH:mm')}–${format(schedule[i].endTime, 'HH:mm')}`
@@ -125,7 +129,6 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                 aria-label={tip}
                 onClick={() => setSelectedIndex(prev => prev === i ? null : i)}
                 className={`
-                  ${colorClass}
                   h-full
                   relative
                   hover:brightness-110
@@ -135,7 +138,7 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                   ${isAdjustable ? 'cursor-ew-resize' : 'cursor-pointer'}
                   ${isSelected ? 'ring-2 ring-inset ring-white/80' : ''}
                 `}
-                style={{ width: `${pct}%`, minWidth: pct < 1 ? '3px' : undefined }}
+                style={{ width: `${pct}%`, minWidth: pct < 1 ? '3px' : undefined, backgroundColor: bgColor }}
               >
                 {isAdjustable && (
                   <span className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
@@ -195,6 +198,7 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                   left: `${pct}%`,
                   top: 0,
                   writingMode: 'vertical-rl',
+                  WebkitWritingMode: 'vertical-rl',
                   transform: 'translateX(-50%) rotate(180deg)',
                 }}
               >
