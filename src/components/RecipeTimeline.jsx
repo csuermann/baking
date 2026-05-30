@@ -127,12 +127,12 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
           })}
         </div>
 
-        {/* Midnight markers — red vertical bar */}
+        {/* Midnight markers — red vertical bar, sticks out above the bar */}
         {midnightMarkers.map((m, i) => (
           <div
             key={i}
-            className="absolute top-0 h-5 pointer-events-none flex flex-col items-center"
-            style={{ left: `${m.pct}%`, transform: 'translateX(-50%)' }}
+            className="absolute -top-2 pointer-events-none"
+            style={{ left: `${m.pct}%`, transform: 'translateX(-50%)', height: 'calc(100% + 8px)' }}
           >
             <div className="w-px h-full bg-red-500" />
           </div>
