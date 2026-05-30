@@ -51,6 +51,7 @@ Der Teig ist backfertig, wenn:
 ### Backen
 
 duration: 70
+passive: true
 
 Den Backofen auf **250°C Ober-/Unterhitze** vorheizen. Die Form in den heißen Ofen stellen, die Temperatur sofort auf **200°C** reduzieren und das Brot **65–70 Minuten** backen, bis die Kruste tief dunkelbraun und das Brot beim Klopfen auf die Unterseite hohl klingt.
 

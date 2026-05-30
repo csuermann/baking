@@ -85,6 +85,7 @@ Eng abdecken und **8–16 Stunden** (am besten über Nacht) im Kühlschrank lage
 ### Ofen mit Gusseisentopf vorheizen
 
 duration: 60
+passive: true
 
 Gusseisentopf (mit Deckel) in den Ofen stellen und auf **250°C Ober-/Unterhitze** (kein Umluft) vorheizen. Eine volle Stunde vorheizen – der Topf muss gleichmäßig und durch und durch heiß sein, nicht nur die Luft drum herum.
 
@@ -105,6 +106,7 @@ Deckel abnehmen. Temperatur auf **230°C** reduzieren und weitere **20–25 Minu
 ### Vollständig auskühlen lassen
 
 duration: 120
+passive: true
 
 Auf ein Gitterrost legen und **mindestens 2 Stunden** warten, bevor das Brot angeschnitten wird – die Krume setzt sich erst beim Abkühlen. Zu früh angeschnitten wird die Krume gummiartig und dicht, egal wie gut der Backverlauf war.
 
