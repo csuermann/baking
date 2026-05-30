@@ -29,10 +29,16 @@ function parseSteps(stepsMarkdown) {
         }
       }
 
+      let isPassive = false
+      if (lines[bodyStart]?.trim() === 'passive: true') {
+        isPassive = true
+        bodyStart += 1
+      }
+
       let bodyLines = lines.slice(bodyStart)
       while (bodyLines.length && bodyLines[0].trim() === '') bodyLines.shift()
 
-      return { title, durationMin, durationMax, isVariable, body: bodyLines.join('\n').trim() }
+      return { title, durationMin, durationMax, isVariable, isPassive, body: bodyLines.join('\n').trim() }
     })
 }
 

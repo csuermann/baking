@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { addMinutes, format } from 'date-fns'
 import { getDefaultDuration } from '../utils/schedule'
+import RecipeTimeline from './RecipeTimeline'
 
 const MAX_OFFSET_MINS = 72 * 60  // 72 hours ahead
 const STEP_MINS = 15
@@ -12,7 +13,7 @@ function quarterFloor(date) {
   return d
 }
 
-export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anchor, onAnchorChange }) {
+export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anchor, onAnchorChange, schedule = [] }) {
   const totalMinutes = useMemo(
     () => steps.reduce((sum, s, i) => sum + (stepDurationOverrides[i] ?? getDefaultDuration(s)), 0),
     [steps, stepDurationOverrides]
@@ -85,6 +86,13 @@ export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anc
           </button>
         </div>
       )}
+
+      <RecipeTimeline
+        steps={steps}
+        schedule={schedule}
+        stepDurationOverrides={stepDurationOverrides}
+        hasAnchor={anchor != null}
+      />
     </div>
   )
 }

@@ -170,6 +170,7 @@ export default function RecipePage() {
         stepDurationOverrides={progress.stepDurationOverrides}
         anchor={progress.scheduleAnchor}
         onAnchorChange={anchor => setProgress(p => ({ ...p, scheduleAnchor: anchor }))}
+        schedule={schedule}
       />
 
       <WaterTempCalc
@@ -204,6 +205,7 @@ export default function RecipePage() {
       <StepList
         steps={recipe.steps}
         schedule={schedule}
+        anchor={progress.scheduleAnchor}
         completedSteps={progress.completedSteps}
         onToggleStep={toggleStep}
         stepDurationOverrides={progress.stepDurationOverrides}

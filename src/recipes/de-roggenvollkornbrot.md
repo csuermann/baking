@@ -37,6 +37,7 @@ Den Teig in eine gefettete oder mit Backpapier ausgelegte Kastenform (ca. **22 �
 ### Stückgare bei 27°C
 
 duration: 240-420
+passive: true
 
 Den Teigling **4–7 Stunden bei 27°C** reifen lassen. Nicht anfassen, nicht nachkorrigieren.
 
@@ -56,5 +57,6 @@ Den Backofen auf **250°C Ober-/Unterhitze** vorheizen. Die Form in den heißen 
 ### Auskühlen
 
 duration: 60
+passive: true
 
 Das Brot sofort aus der Form nehmen und auf einem Gitterrost mindestens **1 Stunde** auskühlen lassen — besser länger. Roggenbrot schneidet sich erst nach dem vollständigen Abkühlen sauber.

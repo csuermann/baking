@@ -78,6 +78,7 @@ Arbeitsfläche leicht bemehlen. Teig umdrehen, behutsam zu einem groben Oval zie
 ### Kaltgare
 
 duration: 480-960
+passive: true
 
 Eng abdecken und **8–16 Stunden** (am besten über Nacht) im Kühlschrank lagern. Die Kälte entwickelt tiefes Aroma und erleichtert das Einschneiden. Der Teigling kann bis zu 3 Tage sicher im Kühlschrank bleiben.
 

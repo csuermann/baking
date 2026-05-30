@@ -57,6 +57,7 @@ Combine flour, sugar, and salt in a large bowl. Add the yeast mixture and the mi
 ### First proof
 
 duration: 60-75
+passive: true
 
 Shape the dough into a ball, cover with cling film and a tea towel. Leave to rise in a **warm spot for about 1 hour** until the volume has **clearly doubled**. The dough is ready when a fingertip impression springs back slowly.
 
@@ -75,6 +76,7 @@ Fold the dough like a **letter** (fold the bottom third up, fold the top third d
 ### Second proof
 
 duration: 30-45
+passive: true
 
 Cover the rolls loosely with a tea towel and leave to rise for **30–45 minutes** until they have visibly puffed up and feel soft and airy to the touch. At the same time, preheat the oven to **200 °C / 390 °F** (top and bottom heat).
 

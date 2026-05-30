@@ -78,6 +78,7 @@ Lightly flour the surface. Flip the dough over, gently stretch it into a rough o
 ### Cold retard
 
 duration: 480-960
+passive: true
 
 Cover tightly and refrigerate for **8–16 hours** (overnight is ideal). The cold rest develops deep flavour and makes scoring easier. The dough can safely stay in the fridge for up to 3 days.
 

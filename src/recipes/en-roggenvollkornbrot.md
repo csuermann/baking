@@ -37,6 +37,7 @@ Transfer the dough into a greased or parchment-lined loaf tin (approx. **22 × 1
 ### Bulk proof at 27°C
 
 duration: 240-420
+passive: true
 
 Leave the dough to ripen for **4–7 hours at 27°C / 81°F**. Don't touch it, don't adjust it.
 
@@ -56,5 +57,6 @@ Preheat the oven to **250°C / 480°F** (top and bottom heat). Place the tin in 
 ### Cool
 
 duration: 60
+passive: true
 
 Turn the loaf out of the tin immediately and cool on a wire rack for at least **1 hour** — longer is better. Rye bread only slices cleanly once it has cooled completely.

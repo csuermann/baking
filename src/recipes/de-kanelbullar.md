@@ -57,6 +57,7 @@ Mehl, Zucker und Salz in einer großen Schüssel mischen. Hefemischung und Milch
 ### Erste Gehzeit
 
 duration: 60-75
+passive: true
 
 Teig zu einer Kugel formen, mit Frischhaltefolie und einem Tuch abdecken. An einem **warmen Ort ca. 1 Stunde** gehen lassen, bis sich das Volumen **deutlich verdoppelt** hat. Der Teig ist fertig, wenn ein Fingerabdruck langsam zurückspringt.
 
@@ -75,6 +76,7 @@ Den Teig wie einen **Dreifachbrief falten** (unteres Drittel hochklappen, oberes
 ### Zweite Gehzeit
 
 duration: 30-45
+passive: true
 
 Schnecken locker mit einem Tuch abdecken und **30–45 Minuten** gehen lassen, bis sie sichtbar aufgegangen sind und sich beim Antippen weich-luftig anfühlen. Gleichzeitig Ofen auf **200 °C Ober-/Unterhitze** vorheizen.
 
