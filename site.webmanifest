@@ -1,0 +1,15 @@
+{
+  "name": "Baking Assistant",
+  "short_name": "Baking",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#f59e0b",
+  "background_color": "#fafaf9",
+  "display": "standalone",
+  "start_url": "/"
+}
