@@ -162,7 +162,7 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
 
       {/* Active-run time labels — vertical strip below the bar */}
       {hasAnchor && (
-        <div className="relative h-8 mt-px">
+        <div className="relative h-8 mt-1.5">
           {activeRuns.flatMap((run, ri) => {
             const startTime = schedule[run.start]?.startTime
             const endTime   = schedule[run.end]?.endTime
@@ -172,7 +172,7 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
             return [
               <span
                 key={`rs-${ri}`}
-                className="absolute text-[10px] leading-none text-stone-400 whitespace-nowrap"
+                className="absolute text-[9px] leading-none text-stone-400 whitespace-nowrap"
                 style={{
                   left: `${leftPct}%`,
                   top: 0,
@@ -184,7 +184,7 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
               </span>,
               <span
                 key={`re-${ri}`}
-                className="absolute text-[10px] leading-none text-stone-400 whitespace-nowrap"
+                className="absolute text-[9px] leading-none text-stone-400 whitespace-nowrap"
                 style={{
                   left: `${rightPct}%`,
                   top: 0,
