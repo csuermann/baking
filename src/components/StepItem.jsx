@@ -110,8 +110,8 @@ export default function StepItem({ step, index, stepSchedule, isCompleted, onTog
             </div>
           )}
 
-          {/* Countdown timer — active steps only */}
-          {!isPassive && !isCompleted && hasTimer && (activatedAt != null || step.isVariable) && (
+          {/* Countdown timer / duration slider */}
+          {!isCompleted && hasTimer && (activatedAt != null || step.isVariable) && (
             <CountdownTimer
               elapsedMs={activatedAt != null ? now - activatedAt : null}
               intendedMs={effectiveDurationMs}
