@@ -158,35 +158,40 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
           </div>
         ))}
 
-        {/* Active-run time labels — start of first and end of last in each run */}
-        {hasAnchor && activeRuns.flatMap((run, ri) => {
-          const startTime = schedule[run.start]?.startTime
-          const endTime   = schedule[run.end]?.endTime
-          if (!startTime || !endTime) return []
-          const leftPct  = cumPct[run.start]
-          const rightPct = cumPct[run.end] + (effectiveDurations[run.end] / totalMinutes) * 100
-          const runWidthPct = rightPct - leftPct
-          return [
-            <span
-              key={`rs-${ri}`}
-              className="absolute top-0 bottom-0 flex items-center pl-1 text-[10px] font-semibold text-white/90 pointer-events-none"
-              style={{ left: `${leftPct}%` }}
-            >
-              {format(startTime, 'HH:mm')}
-            </span>,
-            // Only show end label when there's enough room to avoid overlap (~10% of bar width)
-            runWidthPct > 10 && (
-              <span
-                key={`re-${ri}`}
-                className="absolute top-0 bottom-0 flex items-center pr-1 text-[10px] font-semibold text-white/90 pointer-events-none"
-                style={{ left: `${rightPct}%`, transform: 'translateX(-100%)' }}
-              >
-                {format(endTime, 'HH:mm')}
-              </span>
-            ),
-          ].filter(Boolean)
-        })}
       </div>
+
+      {/* Active-run time labels — strip below the bar */}
+      {hasAnchor && (
+        <div className="relative h-4 mt-px">
+          {activeRuns.flatMap((run, ri) => {
+            const startTime = schedule[run.start]?.startTime
+            const endTime   = schedule[run.end]?.endTime
+            if (!startTime || !endTime) return []
+            const leftPct  = cumPct[run.start]
+            const rightPct = cumPct[run.end] + (effectiveDurations[run.end] / totalMinutes) * 100
+            const runWidthPct = rightPct - leftPct
+            return [
+              <span
+                key={`rs-${ri}`}
+                className="absolute text-[10px] leading-none text-stone-400"
+                style={{ left: `${leftPct}%` }}
+              >
+                {format(startTime, 'HH:mm')}
+              </span>,
+              // Suppress end label when run is too narrow to avoid same-run overlap
+              runWidthPct > 12 && (
+                <span
+                  key={`re-${ri}`}
+                  className="absolute text-[10px] leading-none text-stone-400"
+                  style={{ left: `${rightPct}%`, transform: 'translateX(-100%)' }}
+                >
+                  {format(endTime, 'HH:mm')}
+                </span>
+              ),
+            ].filter(Boolean)
+          })}
+        </div>
+      )}
 
       {/* Inline panel — shown for any selected step */}
       {selectedIndex != null && (() => {
