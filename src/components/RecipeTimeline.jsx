@@ -160,35 +160,39 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
 
       </div>
 
-      {/* Active-run time labels — strip below the bar */}
+      {/* Active-run time labels — rotated 90° strip below the bar */}
       {hasAnchor && (
-        <div className="relative h-4 mt-px">
+        <div className="relative h-8 mt-px">
           {activeRuns.flatMap((run, ri) => {
             const startTime = schedule[run.start]?.startTime
             const endTime   = schedule[run.end]?.endTime
             if (!startTime || !endTime) return []
             const leftPct  = cumPct[run.start]
             const rightPct = cumPct[run.end] + (effectiveDurations[run.end] / totalMinutes) * 100
-            const runWidthPct = rightPct - leftPct
             return [
               <span
                 key={`rs-${ri}`}
-                className="absolute text-[10px] leading-none text-stone-400"
-                style={{ left: `${leftPct}%` }}
+                className="absolute text-[10px] leading-none text-stone-400 whitespace-nowrap"
+                style={{
+                  left: `${leftPct}%`,
+                  top: '50%',
+                  transform: 'translateX(-50%) translateY(-50%) rotate(-90deg)',
+                }}
               >
                 {format(startTime, 'HH:mm')}
               </span>,
-              // Suppress end label when run is too narrow to avoid same-run overlap
-              runWidthPct > 12 && (
-                <span
-                  key={`re-${ri}`}
-                  className="absolute text-[10px] leading-none text-stone-400"
-                  style={{ left: `${rightPct}%`, transform: 'translateX(-100%)' }}
-                >
-                  {format(endTime, 'HH:mm')}
-                </span>
-              ),
-            ].filter(Boolean)
+              <span
+                key={`re-${ri}`}
+                className="absolute text-[10px] leading-none text-stone-400 whitespace-nowrap"
+                style={{
+                  left: `${rightPct}%`,
+                  top: '50%',
+                  transform: 'translateX(-50%) translateY(-50%) rotate(-90deg)',
+                }}
+              >
+                {format(endTime, 'HH:mm')}
+              </span>,
+            ]
           })}
         </div>
       )}
