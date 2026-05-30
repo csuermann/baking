@@ -76,17 +76,6 @@ export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anc
         <span className="text-xs text-stone-400 dark:text-stone-500">+72 h</span>
       </div>
 
-      {anchor && (
-        <div className="mt-2 flex justify-end">
-          <button
-            onClick={() => onAnchorChange(null)}
-            className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 underline"
-          >
-            Clear
-          </button>
-        </div>
-      )}
-
       <RecipeTimeline
         steps={steps}
         schedule={schedule}
