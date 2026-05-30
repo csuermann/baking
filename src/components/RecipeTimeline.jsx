@@ -160,7 +160,7 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
 
       </div>
 
-      {/* Active-run time labels — rotated 90° strip below the bar */}
+      {/* Active-run time labels — vertical strip below the bar */}
       {hasAnchor && (
         <div className="relative h-8 mt-px">
           {activeRuns.flatMap((run, ri) => {
@@ -175,8 +175,9 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                 className="absolute text-[10px] leading-none text-stone-400 whitespace-nowrap"
                 style={{
                   left: `${leftPct}%`,
-                  top: '50%',
-                  transform: 'translateX(-50%) translateY(-50%) rotate(-90deg)',
+                  top: 0,
+                  writingMode: 'vertical-rl',
+                  transform: 'translateX(-50%) rotate(180deg)',
                 }}
               >
                 {format(startTime, 'HH:mm')}
@@ -186,8 +187,9 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                 className="absolute text-[10px] leading-none text-stone-400 whitespace-nowrap"
                 style={{
                   left: `${rightPct}%`,
-                  top: '50%',
-                  transform: 'translateX(-50%) translateY(-50%) rotate(-90deg)',
+                  top: 0,
+                  writingMode: 'vertical-rl',
+                  transform: 'translateX(-50%) rotate(180deg)',
                 }}
               >
                 {format(endTime, 'HH:mm')}
