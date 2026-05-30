@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { format, startOfDay, addDays, addMinutes } from 'date-fns'
 import { getDefaultDuration } from '../utils/schedule'
+import CountdownTimer from './CountdownTimer'
 
 function getMidnightMarkers(start, end) {
   const markers = []
@@ -209,13 +210,11 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
         const s = steps[selectedIndex]
         const isAdjustable = !!s.isVariable && !!onStepDurationChange
         const currentMins = stepDurationOverrides[selectedIndex] ?? getDefaultDuration(s)
-        const stepStart = schedule[selectedIndex]?.startTime
-        const durationMax = s.durationMax ?? s.durationMin
-        const range = durationMax - s.durationMin
-        const thumbPct = range > 0 ? ((currentMins - s.durationMin) / range) * 100 : 0
+        const stepSchedule = schedule[selectedIndex]
         return (
           <div className="mt-2 px-3 py-2.5 bg-stone-800 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
+            {/* Title row */}
+            <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium text-stone-200 truncate">{s.title}</span>
               <button
                 onClick={() => { scrollToStep(selectedIndex); setSelectedIndex(null) }}
@@ -224,52 +223,36 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                 Go to step ↗
               </button>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-12 flex-shrink-0 text-right">
-                <div className="text-xs text-stone-500">{fmtMins(s.durationMin)}</div>
-                {hasAnchor && stepStart && (
-                  <div className="text-xs text-stone-600">{format(addMinutes(stepStart, s.durationMin), 'HH:mm')}</div>
-                )}
+
+            {/* Start / Est. end */}
+            {hasAnchor && stepSchedule && (
+              <div className="flex justify-between mb-3">
+                <div>
+                  <div className="text-xs text-stone-500 mb-0.5">Start</div>
+                  <div className="text-sm font-semibold text-stone-200">{format(stepSchedule.startTime, 'EEE HH:mm')}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-stone-500 mb-0.5">Est. end</div>
+                  <div className="text-sm font-semibold text-stone-200">{format(addMinutes(stepSchedule.startTime, currentMins), 'EEE HH:mm')}</div>
+                </div>
               </div>
-              {/* CountdownTimer-style custom track */}
-              <div className="flex-1 relative h-4 flex items-center">
+            )}
+
+            {/* Slider — same CountdownTimer component as in the step list */}
+            {isAdjustable ? (
+              <CountdownTimer
+                elapsedMs={null}
+                intendedMs={currentMins * 60 * 1000}
+                durationMin={s.durationMin}
+                durationMax={s.durationMax}
+                isVariable={true}
+                onIntendedChange={mins => onStepDurationChange(selectedIndex, mins)}
+              />
+            ) : (
+              <div className="relative h-4 flex items-center mt-1">
                 <div className="absolute inset-x-0 h-2 rounded-full bg-stone-700" />
-                {isAdjustable && (
-                  <div className="absolute inset-x-0 h-2 rounded-full bg-amber-900/30" />
-                )}
-                {isAdjustable && (
-                  <div
-                    className="absolute w-3 h-3 rounded-full border-2 bg-white border-amber-500"
-                    style={{ left: `${thumbPct}%`, transform: 'translateX(-50%)' }}
-                  />
-                )}
-                {isAdjustable && (
-                  <input
-                    type="range"
-                    min={s.durationMin}
-                    max={durationMax}
-                    step={5}
-                    value={currentMins}
-                    onChange={e => onStepDurationChange(selectedIndex, Number(e.target.value))}
-                    className="absolute inset-0 h-full opacity-0 cursor-pointer"
-                  />
-                )}
               </div>
-              <div className="w-12 flex-shrink-0">
-                <div className="text-xs text-stone-500">{fmtMins(durationMax)}</div>
-                {hasAnchor && stepStart && (
-                  <div className="text-xs text-stone-600">{format(addMinutes(stepStart, durationMax), 'HH:mm')}</div>
-                )}
-              </div>
-            </div>
-            <div className="text-center text-sm font-semibold text-amber-400 mt-1">
-              {fmtMins(currentMins)}
-              {hasAnchor && stepStart && (
-                <span className="ml-1.5 text-xs font-normal text-stone-400">
-                  → {format(addMinutes(stepStart, currentMins), 'HH:mm')}
-                </span>
-              )}
-            </div>
+            )}
           </div>
         )
       })()}
