@@ -209,6 +209,8 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
         const s = steps[selectedIndex]
         const isAdjustable = !!s.isVariable && !!onStepDurationChange
         const currentMins = stepDurationOverrides[selectedIndex] ?? getDefaultDuration(s)
+        const stepStart = schedule[selectedIndex]?.startTime
+        const durationMax = s.durationMax ?? s.durationMin
         return (
           <div className="mt-2 px-3 py-2.5 bg-stone-800 rounded-lg">
             <div className="flex items-center justify-between mb-2">
@@ -220,44 +222,41 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                 Go to step ↗
               </button>
             </div>
-            {isAdjustable && (() => {
-              const stepStart = schedule[selectedIndex]?.startTime
-              return (
-                <>
-                  <div className="flex items-center gap-2">
-                    <div className="w-12 flex-shrink-0 text-right">
-                      <div className="text-xs text-stone-500">{fmtMins(s.durationMin)}</div>
-                      {hasAnchor && stepStart && (
-                        <div className="text-xs text-stone-600">{format(addMinutes(stepStart, s.durationMin), 'HH:mm')}</div>
-                      )}
-                    </div>
-                    <input
-                      type="range"
-                      min={s.durationMin}
-                      max={s.durationMax}
-                      step={5}
-                      value={currentMins}
-                      onChange={e => onStepDurationChange(selectedIndex, Number(e.target.value))}
-                      className="flex-1 accent-amber-500"
-                    />
-                    <div className="w-12 flex-shrink-0">
-                      <div className="text-xs text-stone-500">{fmtMins(s.durationMax)}</div>
-                      {hasAnchor && stepStart && (
-                        <div className="text-xs text-stone-600">{format(addMinutes(stepStart, s.durationMax), 'HH:mm')}</div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="text-center text-sm font-semibold text-amber-400 mt-1">
-                    {fmtMins(currentMins)}
-                    {hasAnchor && stepStart && (
-                      <span className="ml-1.5 text-xs font-normal text-stone-400">
-                        → {format(addMinutes(stepStart, currentMins), 'HH:mm')}
-                      </span>
-                    )}
-                  </div>
-                </>
-              )
-            })()}
+            <div className="flex items-center gap-2">
+              <div className="w-12 flex-shrink-0 text-right">
+                <div className="text-xs text-stone-500">{fmtMins(s.durationMin)}</div>
+                {hasAnchor && stepStart && (
+                  <div className="text-xs text-stone-600">{format(addMinutes(stepStart, s.durationMin), 'HH:mm')}</div>
+                )}
+              </div>
+              {isAdjustable ? (
+                <input
+                  type="range"
+                  min={s.durationMin}
+                  max={durationMax}
+                  step={5}
+                  value={currentMins}
+                  onChange={e => onStepDurationChange(selectedIndex, Number(e.target.value))}
+                  className="flex-1 accent-amber-500"
+                />
+              ) : (
+                <div className="flex-1 h-2 rounded-full bg-stone-600" />
+              )}
+              <div className="w-12 flex-shrink-0">
+                <div className="text-xs text-stone-500">{fmtMins(durationMax)}</div>
+                {hasAnchor && stepStart && (
+                  <div className="text-xs text-stone-600">{format(addMinutes(stepStart, durationMax), 'HH:mm')}</div>
+                )}
+              </div>
+            </div>
+            <div className="text-center text-sm font-semibold text-amber-400 mt-1">
+              {fmtMins(currentMins)}
+              {hasAnchor && stepStart && (
+                <span className="ml-1.5 text-xs font-normal text-stone-400">
+                  → {format(addMinutes(stepStart, currentMins), 'HH:mm')}
+                </span>
+              )}
+            </div>
           </div>
         )
       })()}
