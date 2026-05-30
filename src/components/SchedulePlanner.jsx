@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { addMinutes, format } from 'date-fns'
-import { getDefaultDuration } from '../utils/schedule'
+import { getDefaultDuration, computeSchedule } from '../utils/schedule'
 import RecipeTimeline from './RecipeTimeline'
 
 const MAX_OFFSET_MINS = 72 * 60  // 72 hours ahead
@@ -13,7 +13,7 @@ function quarterFloor(date) {
   return d
 }
 
-export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anchor, onAnchorChange, schedule = [], onStepDurationChange }) {
+export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anchor, onAnchorChange, onStepDurationChange }) {
   const totalMinutes = useMemo(
     () => steps.reduce((sum, s, i) => sum + (stepDurationOverrides[i] ?? getDefaultDuration(s)), 0),
     [steps, stepDurationOverrides]
@@ -21,6 +21,14 @@ export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anc
   const h = Math.floor(totalMinutes / 60)
   const m = Math.round(totalMinutes % 60)
   const durationLabel = m > 0 ? `${h}h ${m}m` : `${h}h`
+
+  // Planned schedule — always a clean projection from the anchor, ignoring any
+  // real activation/completion timestamps so the Gantt updates correctly as the
+  // slider moves even when the recipe is already in progress.
+  const plannedSchedule = useMemo(
+    () => computeSchedule(steps, anchor, {}, stepDurationOverrides, {}, []),
+    [steps, anchor, stepDurationOverrides]
+  )
 
   // Slider value = minutes from the floored-now to start. Clamped to [0, MAX].
   const base = quarterFloor(new Date())
@@ -78,7 +86,7 @@ export default function SchedulePlanner({ steps, stepDurationOverrides = {}, anc
 
       <RecipeTimeline
         steps={steps}
-        schedule={schedule}
+        schedule={plannedSchedule}
         stepDurationOverrides={stepDurationOverrides}
         hasAnchor={anchor != null}
         onStepDurationChange={onStepDurationChange}

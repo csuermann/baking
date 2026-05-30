@@ -170,7 +170,6 @@ export default function RecipePage() {
         stepDurationOverrides={progress.stepDurationOverrides}
         anchor={progress.scheduleAnchor}
         onAnchorChange={anchor => setProgress(p => ({ ...p, scheduleAnchor: anchor }))}
-        schedule={schedule}
         onStepDurationChange={handleStepDurationChange}
       />
 
