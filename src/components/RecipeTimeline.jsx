@@ -258,21 +258,6 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
         )
       })()}
 
-      {/* Day labels below midnight markers */}
-      {midnightMarkers.length > 0 && (
-        <div className="relative h-4 mt-0.5">
-          {midnightMarkers.map((m, i) => (
-            <span
-              key={i}
-              className="absolute text-xs text-stone-500 -translate-x-1/2"
-              style={{ left: `${m.pct}%` }}
-            >
-              {m.label}
-            </span>
-          ))}
-        </div>
-      )}
-
       {/* Legend */}
       {hasPassive && (
         <div className="flex items-center gap-4 mt-2 flex-wrap">
