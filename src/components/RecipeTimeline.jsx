@@ -211,6 +211,8 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
         const currentMins = stepDurationOverrides[selectedIndex] ?? getDefaultDuration(s)
         const stepStart = schedule[selectedIndex]?.startTime
         const durationMax = s.durationMax ?? s.durationMin
+        const range = durationMax - s.durationMin
+        const thumbPct = range > 0 ? ((currentMins - s.durationMin) / range) * 100 : 0
         return (
           <div className="mt-2 px-3 py-2.5 bg-stone-800 rounded-lg">
             <div className="flex items-center justify-between mb-2">
@@ -229,19 +231,30 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                   <div className="text-xs text-stone-600">{format(addMinutes(stepStart, s.durationMin), 'HH:mm')}</div>
                 )}
               </div>
-              {isAdjustable ? (
-                <input
-                  type="range"
-                  min={s.durationMin}
-                  max={durationMax}
-                  step={5}
-                  value={currentMins}
-                  onChange={e => onStepDurationChange(selectedIndex, Number(e.target.value))}
-                  className="flex-1 accent-amber-500"
-                />
-              ) : (
-                <div className="flex-1 h-2 rounded-full bg-stone-600" />
-              )}
+              {/* CountdownTimer-style custom track */}
+              <div className="flex-1 relative h-4 flex items-center">
+                <div className="absolute inset-x-0 h-2 rounded-full bg-stone-700" />
+                {isAdjustable && (
+                  <div className="absolute inset-x-0 h-2 rounded-full bg-amber-900/30" />
+                )}
+                {isAdjustable && (
+                  <div
+                    className="absolute w-3 h-3 rounded-full border-2 bg-white border-amber-500"
+                    style={{ left: `${thumbPct}%`, transform: 'translateX(-50%)' }}
+                  />
+                )}
+                {isAdjustable && (
+                  <input
+                    type="range"
+                    min={s.durationMin}
+                    max={durationMax}
+                    step={5}
+                    value={currentMins}
+                    onChange={e => onStepDurationChange(selectedIndex, Number(e.target.value))}
+                    className="absolute inset-0 h-full opacity-0 cursor-pointer"
+                  />
+                )}
+              </div>
               <div className="w-12 flex-shrink-0">
                 <div className="text-xs text-stone-500">{fmtMins(durationMax)}</div>
                 {hasAnchor && stepStart && (
