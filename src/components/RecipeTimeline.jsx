@@ -231,7 +231,7 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                       type="range"
                       min={s.durationMin}
                       max={s.durationMax}
-                      step={15}
+                      step={5}
                       value={currentMins}
                       onChange={e => onStepDurationChange(selectedIndex, Number(e.target.value))}
                       className="flex-1 accent-amber-500"
