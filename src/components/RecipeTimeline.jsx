@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { format, startOfDay, addDays } from 'date-fns'
+import { format, startOfDay, addDays, addMinutes } from 'date-fns'
 import { getDefaultDuration } from '../utils/schedule'
 
 function getMidnightMarkers(start, end) {
@@ -156,26 +156,44 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                 Go to step ↗
               </button>
             </div>
-            {isAdjustable && (
-              <>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-stone-500 w-12 text-right flex-shrink-0">{fmtMins(s.durationMin)}</span>
-                  <input
-                    type="range"
-                    min={s.durationMin}
-                    max={s.durationMax}
-                    step={15}
-                    value={currentMins}
-                    onChange={e => onStepDurationChange(selectedIndex, Number(e.target.value))}
-                    className="flex-1 accent-amber-500"
-                  />
-                  <span className="text-xs text-stone-500 w-12 flex-shrink-0">{fmtMins(s.durationMax)}</span>
-                </div>
-                <div className="text-center text-sm font-semibold text-amber-400 mt-1">
-                  {fmtMins(currentMins)}
-                </div>
-              </>
-            )}
+            {isAdjustable && (() => {
+              const stepStart = schedule[selectedIndex]?.startTime
+              return (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="w-12 flex-shrink-0 text-right">
+                      <div className="text-xs text-stone-500">{fmtMins(s.durationMin)}</div>
+                      {hasAnchor && stepStart && (
+                        <div className="text-xs text-stone-600">{format(addMinutes(stepStart, s.durationMin), 'HH:mm')}</div>
+                      )}
+                    </div>
+                    <input
+                      type="range"
+                      min={s.durationMin}
+                      max={s.durationMax}
+                      step={15}
+                      value={currentMins}
+                      onChange={e => onStepDurationChange(selectedIndex, Number(e.target.value))}
+                      className="flex-1 accent-amber-500"
+                    />
+                    <div className="w-12 flex-shrink-0">
+                      <div className="text-xs text-stone-500">{fmtMins(s.durationMax)}</div>
+                      {hasAnchor && stepStart && (
+                        <div className="text-xs text-stone-600">{format(addMinutes(stepStart, s.durationMax), 'HH:mm')}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-center text-sm font-semibold text-amber-400 mt-1">
+                    {fmtMins(currentMins)}
+                    {hasAnchor && stepStart && (
+                      <span className="ml-1.5 text-xs font-normal text-stone-400">
+                        → {format(addMinutes(stepStart, currentMins), 'HH:mm')}
+                      </span>
+                    )}
+                  </div>
+                </>
+              )
+            })()}
           </div>
         )
       })()}
