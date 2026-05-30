@@ -31,6 +31,24 @@ function fmtMins(min) {
   return h > 0 ? `${h}h` : `${m}m`
 }
 
+// Lucide-style wrench icon (stroke, 24x24 viewBox)
+function WrenchIcon() {
+  return (
+    <svg
+      className="w-2.5 h-2.5 text-white/60 shrink-0"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+    </svg>
+  )
+}
+
 export default function RecipeTimeline({ steps, schedule, stepDurationOverrides = {}, hasAnchor = false, onStepDurationChange }) {
   const [selectedIndex, setSelectedIndex] = useState(null)
 
@@ -80,51 +98,52 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
               ? `${step.title} · ${format(schedule[i].startTime, 'HH:mm')}–${format(schedule[i].endTime, 'HH:mm')}`
               : step.title
 
-            const handleClick = () => {
-              if (isAdjustable) {
-                setSelectedIndex(prev => prev === i ? null : i)
-              } else {
-                scrollToStep(i)
-              }
-            }
-
             return (
               <button
                 key={i}
                 title={tip}
                 aria-label={tip}
-                onClick={handleClick}
+                onClick={() => setSelectedIndex(prev => prev === i ? null : i)}
                 className={`
                   ${colorClass}
                   h-full
+                  relative
                   hover:brightness-110
                   border-r border-stone-950/20 last:border-r-0
                   focus:outline-none
                   transition-[filter,box-shadow]
-                  ${isAdjustable ? 'cursor-ew-resize' : ''}
-                  ${isSelected ? 'ring-2 ring-inset ring-amber-300' : ''}
+                  ${isAdjustable ? 'cursor-ew-resize' : 'cursor-pointer'}
+                  ${isSelected ? 'ring-2 ring-inset ring-white/80' : ''}
                 `}
                 style={{ width: `${pct}%`, minWidth: pct < 1 ? '3px' : undefined }}
-              />
+              >
+                {isAdjustable && (
+                  <span className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+                    <WrenchIcon />
+                  </span>
+                )}
+              </button>
             )
           })}
         </div>
 
-        {/* Midnight markers */}
+        {/* Midnight markers — red vertical bar */}
         {midnightMarkers.map((m, i) => (
           <div
             key={i}
             className="absolute top-0 h-5 pointer-events-none flex flex-col items-center"
             style={{ left: `${m.pct}%`, transform: 'translateX(-50%)' }}
           >
-            <div className="w-px h-full bg-stone-200/30" />
+            <div className="w-px h-full bg-red-500" />
           </div>
         ))}
       </div>
 
-      {/* Inline duration adjustment panel */}
-      {selectedIndex != null && onStepDurationChange && (() => {
+      {/* Inline panel — shown for any selected step */}
+      {selectedIndex != null && (() => {
         const s = steps[selectedIndex]
+        const isPassive = s.isPassive ?? false
+        const isAdjustable = s.isVariable && !isPassive && !!onStepDurationChange
         const currentMins = stepDurationOverrides[selectedIndex] ?? getDefaultDuration(s)
         return (
           <div className="mt-2 px-3 py-2.5 bg-stone-800 rounded-lg">
@@ -137,22 +156,26 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                 Go to step ↗
               </button>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-stone-500 w-12 text-right flex-shrink-0">{fmtMins(s.durationMin)}</span>
-              <input
-                type="range"
-                min={s.durationMin}
-                max={s.durationMax}
-                step={15}
-                value={currentMins}
-                onChange={e => onStepDurationChange(selectedIndex, Number(e.target.value))}
-                className="flex-1 accent-amber-500"
-              />
-              <span className="text-xs text-stone-500 w-12 flex-shrink-0">{fmtMins(s.durationMax)}</span>
-            </div>
-            <div className="text-center text-sm font-semibold text-amber-400 mt-1">
-              {fmtMins(currentMins)}
-            </div>
+            {isAdjustable && (
+              <>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-stone-500 w-12 text-right flex-shrink-0">{fmtMins(s.durationMin)}</span>
+                  <input
+                    type="range"
+                    min={s.durationMin}
+                    max={s.durationMax}
+                    step={15}
+                    value={currentMins}
+                    onChange={e => onStepDurationChange(selectedIndex, Number(e.target.value))}
+                    className="flex-1 accent-amber-500"
+                  />
+                  <span className="text-xs text-stone-500 w-12 flex-shrink-0">{fmtMins(s.durationMax)}</span>
+                </div>
+                <div className="text-center text-sm font-semibold text-amber-400 mt-1">
+                  {fmtMins(currentMins)}
+                </div>
+              </>
+            )}
           </div>
         )
       })()}
