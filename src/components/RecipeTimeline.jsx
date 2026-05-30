@@ -112,7 +112,7 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
             const isAdjustable = isVariable && !!onStepDurationChange
             const isSelected = selectedIndex === i
 
-            let colorClass = isPassive ? 'bg-stone-600' : (isVariable ? 'bg-amber-400' : 'bg-amber-500')
+            let colorClass = isPassive ? 'bg-stone-600' : 'bg-amber-500'
 
             const tip = hasAnchor && schedule[i]
               ? `${step.title} · ${format(schedule[i].startTime, 'HH:mm')}–${format(schedule[i].endTime, 'HH:mm')}`
