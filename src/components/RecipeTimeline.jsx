@@ -63,6 +63,26 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
   const totalMinutes = effectiveDurations.reduce((a, b) => a + b, 0)
   if (totalMinutes === 0) return null
 
+  // Cumulative left-percentage per step (step i starts at cumPct[i]%)
+  const cumPct = []
+  let cumAcc = 0
+  for (let i = 0; i < steps.length; i++) {
+    cumPct.push(cumAcc)
+    cumAcc += (effectiveDurations[i] / totalMinutes) * 100
+  }
+
+  // Runs of consecutive non-passive (active) steps
+  const activeRuns = []
+  let runStart = null
+  for (let i = 0; i <= steps.length; i++) {
+    const isActive = i < steps.length && !(steps[i].isPassive ?? false)
+    if (isActive && runStart === null) runStart = i
+    else if (!isActive && runStart !== null) {
+      activeRuns.push({ start: runStart, end: i - 1 })
+      runStart = null
+    }
+  }
+
   const hasPassive = steps.some(s => s.isPassive)
 
   const recipeStart = schedule[0]?.startTime
@@ -137,6 +157,35 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
             <div className="w-px h-full bg-red-500" />
           </div>
         ))}
+
+        {/* Active-run time labels — start of first and end of last in each run */}
+        {hasAnchor && activeRuns.flatMap((run, ri) => {
+          const startTime = schedule[run.start]?.startTime
+          const endTime   = schedule[run.end]?.endTime
+          if (!startTime || !endTime) return []
+          const leftPct  = cumPct[run.start]
+          const rightPct = cumPct[run.end] + (effectiveDurations[run.end] / totalMinutes) * 100
+          const runWidthPct = rightPct - leftPct
+          return [
+            <span
+              key={`rs-${ri}`}
+              className="absolute top-0 bottom-0 flex items-center pl-1 text-[10px] font-semibold text-white/90 pointer-events-none"
+              style={{ left: `${leftPct}%` }}
+            >
+              {format(startTime, 'HH:mm')}
+            </span>,
+            // Only show end label when there's enough room to avoid overlap (~10% of bar width)
+            runWidthPct > 10 && (
+              <span
+                key={`re-${ri}`}
+                className="absolute top-0 bottom-0 flex items-center pr-1 text-[10px] font-semibold text-white/90 pointer-events-none"
+                style={{ left: `${rightPct}%`, transform: 'translateX(-100%)' }}
+              >
+                {format(endTime, 'HH:mm')}
+              </span>
+            ),
+          ].filter(Boolean)
+        })}
       </div>
 
       {/* Inline panel — shown for any selected step */}
