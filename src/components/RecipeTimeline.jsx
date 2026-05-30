@@ -249,8 +249,14 @@ export default function RecipeTimeline({ steps, schedule, stepDurationOverrides 
                 onIntendedChange={mins => onStepDurationChange(selectedIndex, mins)}
               />
             ) : (
-              <div className="relative h-4 flex items-center mt-1">
+              <div className="relative h-4 flex items-center mt-1 mb-5">
                 <div className="absolute inset-x-0 h-2 rounded-full bg-stone-700" />
+                <span
+                  className="absolute text-xs font-medium text-stone-300 whitespace-nowrap pointer-events-none"
+                  style={{ left: '100%', transform: 'translateX(-50%)', top: 'calc(100% + 4px)' }}
+                >
+                  {fmtMins(currentMins)}
+                </span>
               </div>
             )}
           </div>
